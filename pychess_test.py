@@ -478,7 +478,7 @@ class ChessboardTest(unittest.TestCase):
         int piece = output[startRow][startCol]
         output[startRow][startCol] = 0
         output[endRow][endCol] = piece
-        return new Chessboard(output, true)
+        return new Chessboard(output, True)
     
     
     # given: board dimensions are equal
