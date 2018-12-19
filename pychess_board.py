@@ -50,7 +50,7 @@ class pychess_board():
     def getBoard(self): 
         return self.board.deepcopy()
     
-    def kingInDanger(currentTurn):
+    def kingInDanger(self,currentTurn):
         # if currentTurn is True, returns if the king is in danger for player whose turn it is
         # if currentTurn is False, returns if the king is in danger for player whose turn it is not
         sign = 0
@@ -209,8 +209,8 @@ class pychess_board():
         
         return False 
     
-    def kingInDanger(pychess_boardboard, currentTurn):
-        return pychess_boardboard.kingInDanger(currentTurn) # returns True if king is in danger on board b for specified turn
+    def kingInDanger(pychess_board, currentTurn):
+        return pychess_board.kingInDanger(currentTurn) # returns True if king is in danger on board b for specified turn
     
     def move(self, startRow, startCol, endRow, endCol):
         
@@ -222,7 +222,7 @@ class pychess_board():
         
         return False
     
-    def toString():
+    def toString(self):
         output = "________________________________________________\n"
         for row in range(8):
             output += "|     |     |     |     |     |     |     |     |\n"
@@ -264,7 +264,7 @@ class pychess_board():
      * @param col the current column of piece
      * @return List of containing the endRow and endCol of each possible move
      """
-    def getMoves(row, col):
+    def getMoves(self, row, col):
         piece = board[row][col]
         
         if(piece == 1 or piece == -1):
@@ -284,7 +284,7 @@ class pychess_board():
         
     
     ## returns a list of all possible moves. each move is a list [current_row, current_col, end_row, end_col]
-    def getAllMoves(CurrentTurn):
+    def getAllMoves(self, CurrentTurn):
         # TODO implement
         # TODO change get moves method to return array list of arrays
         # of the form:startRow, startCol, endRow, endCol
@@ -292,7 +292,7 @@ class pychess_board():
     
     # methods # # # # # # # # # # # # # # # # # 
     
-    def castle(color, dir):
+    def castle(self, color, dir):
         if(color.equals("white")):
             self.canCastle[0] = False
             self.canCastle[1] = False
@@ -315,10 +315,10 @@ class pychess_board():
             
         
     
-    def enPassant(row, col):
+    def enPassant(self, row, col):
         board[row][col] = 0
     
-    def movePiece(startRow, startCol, endRow, endCol): # TODO check movePiece
+    def movePiece(self, startRow, startCol, endRow, endCol): # TODO check movePiece
         
         # reset enPassant if reset flag is set
         if(canEnPassant[2] != 0):
@@ -348,12 +348,12 @@ class pychess_board():
         board[endRow][endCol] = piece
         whiteToMove = not whiteToMove
     
-    def movePieceNoCheck(startRow, startCol, endRow, endCol): # returns a new pychess_board object with the piece moved regardless if it is a legal move
+    def movePieceNoCheck(self, startRow, startCol, endRow, endCol): # returns a new pychess_board object with the piece moved regardless if it is a legal move
         output = self.clone() # clone is redundant but for safety
         output.movePiece(startRow, startCol, endRow, endCol)
         return output
     
-    def checkMove(startRow, startCol, endRow, endCol):
+    def checkMove(self, startRow, startCol, endRow, endCol):
         
         piece = board[startRow][startCol]
         
@@ -399,7 +399,7 @@ class pychess_board():
             return False
         
     
-    def checkMoveBishop(startRow, startCol, endRow, endCol):
+    def checkMoveBishop(self, startRow, startCol, endRow, endCol):
         rowDiff = endRow - startRow
         colDiff = endCol - startCol
         
@@ -410,7 +410,7 @@ class pychess_board():
         
         return isEmptyBetween(startRow, startCol, endRow, endCol)
     
-    def checkMoveKing(startRow, startCol, endRow, endCol):
+    def checkMoveKing(self, startRow, startCol, endRow, endCol):
         rowDiff = endRow - startRow
         colDiff = endCol - startCol
         piece = board[startCol][endCol]
@@ -455,13 +455,13 @@ class pychess_board():
         
         return False
     
-    def checkMoveKnight(startRow, startCol, endRow, endCol):
+    def checkMoveKnight(self, startRow, startCol, endRow, endCol):
         rowDiff = endRow - startRow
         colDiff = endCol - startCol
     
         return Math.abs(rowDiff*colDiff) == 2
     
-    def checkMovePawn(startRow, startCol, endRow, endCol):
+    def checkMovePawn(self, startRow, startCol, endRow, endCol):
         
         piece = board[startRow][startCol]
         rowDiff = endRow - startRow
@@ -502,7 +502,7 @@ class pychess_board():
         
         return False
     
-    def checkMoveQueen(startRow, startCol, endRow, endCol):
+    def checkMoveQueen(self, startRow, startCol, endRow, endCol):
         rowDiff = endRow - startRow
         colDiff = endCol - startCol
         
@@ -513,7 +513,7 @@ class pychess_board():
         
         return isEmptyBetween(startRow, startCol, endRow, endCol)
     
-    def checkMoveRook(startRow, startCol, endRow, endCol):
+    def checkMoveRook(self, startRow, startCol, endRow, endCol):
         rowDiff = endRow - startRow
         colDiff = endCol - startCol
         
@@ -541,7 +541,7 @@ class pychess_board():
         return False
         
     
-    def getMovesBishop(row, col): # returns a list of possible moves. each move is a list [end_row, end_col]
+    def getMovesBishop(self, row, col): # returns a list of possible moves. each move is a list [end_row, end_col]
         output = []
         for i in range(8):
             if(checkMove(row, col, row + i, col + i)):
@@ -558,7 +558,7 @@ class pychess_board():
         
         return output
     
-    def getMovesKing(kingRow, kingCol):
+    def getMovesKing(self, kingRow, kingCol):
         output = []
         
         for row in range(-1, 2):
@@ -576,7 +576,7 @@ class pychess_board():
         
         return output
     
-    def getMovesKnight(knightRow, knightCol):
+    def getMovesKnight(self, knightRow, knightCol):
         output = []
         
         for row in range(-2, 3):
@@ -600,7 +600,7 @@ class pychess_board():
         output.add(col)
         return output
     
-    def getMovesPawn(row, col):
+    def getMovesPawn(self, row, col):
         output = []
         
         # TODO make pawn moves more efficient
@@ -638,7 +638,7 @@ class pychess_board():
         
         return output
     
-    def getMovesQueen(queenRow, queenCol):
+    def getMovesQueen(self, queenRow, queenCol):
         output = []
         
         for i in range(8):
@@ -670,7 +670,7 @@ class pychess_board():
         
         return output
     
-    def getMovesRook(rookRow, rookCol):
+    def getMovesRook(self, rookRow, rookCol):
         output = []
         
         for i in range(8):
@@ -686,7 +686,7 @@ class pychess_board():
     def isEmptySquare(self, row, col):
         return (self.board[row][col] == 0)
     
-    def isEmptyBetween(startRow, startCol, endRow, endCol): # TODO check isEmptyBetween
+    def isEmptyBetween(self, startRow, startCol, endRow, endCol): # TODO check isEmptyBetween
         # checks if the squares STRICTLY BETWEEN the starting and ending squares are empty
         rowDiff = endRow - startRow
         colDiff = endCol - startCol
@@ -735,7 +735,7 @@ class pychess_board():
     def isEnemySquare(self, piece, row, col):
         return (piece * self.board[row][col] < 0)
     
-    def isSafeBetween(startRow, startCol, endRow, endCol): # TODO check isSafeBetween
+    def isSafeBetween(self, startRow, startCol, endRow, endCol): # TODO check isSafeBetween
         # checks if the squares STRICTLY BETWEEN the starting and ending squares are safe for king to cross
         
         rowDiff = endRow - startRow
@@ -786,16 +786,16 @@ class pychess_board():
         
         return True
     
-    def outOfBounds(row, col):
+    def outOfBounds(self, row, col):
         # makes sure a is a valid row or column
         return (row < 0 or row > 7 or col < 0 or col > 7)
     
-    def movingForwardOne(piece, rowDiff):
+    def movingForwardOne(self, piece, rowDiff):
         return (rowDiff * piece < 0 and Math.abs(rowDiff) == 1)
     
     
     # copies the board from pychess_board object to current pychess_board object
-    def copyBoard(board_to_copy):
+    def copyBoard(self, board_to_copy):
         for row in range(8):
             for col in range(8):
                 self.board[row][col] = board_to_copy.board[row][col]
