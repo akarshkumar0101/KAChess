@@ -1,6 +1,6 @@
 import java.util.ArrayList
 
-class Chessboard:
+class pychess():
     # FIXME things like checkmate, stalemate, and promotion
     
     """
@@ -25,39 +25,38 @@ class Chessboard:
      * : 2,  3,  4,  5,  6,  4,  3,  2
      """
     
-    board
-    canEnPassant #:row, col, resetNextTurn if no row/col, set to -1. reset on 1, don't on 0
-    whiteToMove
-    boolean[] canCastle #:whiteKingside, whiteQueenside, blackKingside, blackQueenside
+    self.board
+    self.canEnPassant #:row, col, resetNextTurn if no row/col, set to -1. reset on 1, don't on 0
+    self.whiteToMove
+    self.canCastle #: [whiteKingside, whiteQueenside, blackKingside, blackQueenside] boolean array
     
-    # constructors # # # # # # # # # # # # # # # # # 
+    # constructor # # # # # # # # # # # # # # # # # 
     
-    Chessboard():
-        setUpBoard()
-    
-    Chessboard(a):
-        setUpBoard()
-        whiteToMove = a
-    
-    Chessboard(b, a):
-        setUpBoard()
-        board = b
-        whiteToMove = a
+    def __init__(self, board_setup = None, to_move = True):
+        
+        if(board_setup == None):
+            self.board = getNewBoard()
+        else:
+            self.board = board_setup
+        
+        self.whiteToMove = to_move
+        
+        self.canEnPassant = [-1, -1, 0]
+        self.canCastle = [True, True, True, True]
+        
     
     
     # methods # # # # # # # # # # # # # # # # # 
+    # returns int[][] of current board position
+    def getBoard(self): 
+        return self.board.deepcopy()
     
-    getBoard(){
-        Chessboard output =  new Chessboard()
-        output.copyBoard(this)
-        return output.board
-    
-    kingInDanger(currentTurn):
+    def kingInDanger(currentTurn):
         # if currentTurn is True, returns if the king is in danger for player whose turn it is
         # if currentTurn is False, returns if the king is in danger for player whose turn it is not
-        int sign = 0
-        int kingRow = -1
-        int kingCol = -1
+        sign = 0
+        kingRow = -1
+        kingCol = -1
         
         if((currentTurn and whiteToMove) or (!currentTurn and !whiteToMove)):
             sign = 1
@@ -105,7 +104,7 @@ class Chessboard:
         # check up and down
         for row in range(1, 7):
             if(!outOfBounds(kingRow + row, kingCol)):
-                int tempPiece =  board[kingRow + row][kingCol]
+                tempPiece =  board[kingRow + row][kingCol]
                 if(tempPiece == sign * -5 or tempPiece == sign * -2):
                     return True
                 else if(tempPiece * sign > 0):
@@ -118,7 +117,7 @@ class Chessboard:
         
         for row in range(1, 7):
             if(!outOfBounds(kingRow - row, kingCol)):
-                int tempPiece =  board[kingRow - row][kingCol]
+                tempPiece =  board[kingRow - row][kingCol]
                 if(tempPiece == sign * -5 or tempPiece == sign * -2):
                     return True
                 else if(tempPiece * sign > 0):
@@ -132,7 +131,7 @@ class Chessboard:
         # check left and right
         for col in range(1, 7):
             if(!outOfBounds(kingRow, kingCol + col)):
-                int tempPiece =  board[kingRow][kingCol + col]
+                tempPiece =  board[kingRow][kingCol + col]
                 if(tempPiece == sign * -5 or tempPiece == sign * -2):
                     return True
                 else if(tempPiece * sign > 0):
@@ -145,7 +144,7 @@ class Chessboard:
         
         for col in range(1, 7):
             if(!outOfBounds(kingRow, kingCol - col)):
-                int tempPiece =  board[kingRow][kingCol - col]
+                tempPiece =  board[kingRow][kingCol - col]
                 if(tempPiece == sign * -5 or tempPiece == sign * -2):
                     return True
                 else if(tempPiece * sign > 0):
@@ -159,7 +158,7 @@ class Chessboard:
         # check down-right
         for i in range(1, 7):
             if(!outOfBounds(kingRow + i, kingCol + i)):
-                int tempPiece =  board[kingRow + i][kingCol + i]
+                tempPiece =  board[kingRow + i][kingCol + i]
                 if(tempPiece == sign * -5 or tempPiece == sign * -2):
                     return True
                 else if(tempPiece * sign > 0):
@@ -172,7 +171,7 @@ class Chessboard:
         # check up-left
         for i in range(1, 7):
             if(!outOfBounds(kingRow - i, kingCol - i)):
-                int tempPiece =  board[kingRow - i][kingCol - i]
+                tempPiece =  board[kingRow - i][kingCol - i]
                 if(tempPiece == sign * -5 or tempPiece == sign * -2):
                     return True
                 else if(tempPiece * sign > 0):
@@ -185,7 +184,7 @@ class Chessboard:
         # check down-left
         for i in range(1, 7):
             if(!outOfBounds(kingRow + i, kingCol - i)):
-                int tempPiece =  board[kingRow + i][kingCol - i]
+                tempPiece =  board[kingRow + i][kingCol - i]
                 if(tempPiece == sign * -5 or tempPiece == sign * -2):
                     return True
                 else if(tempPiece * sign > 0):
@@ -198,7 +197,7 @@ class Chessboard:
         # check up-right
         for i in range(1, 7):
             if(!outOfBounds(kingRow - i, kingCol + i)):
-                int tempPiece =  board[kingRow - i][kingCol + i]
+                tempPiece =  board[kingRow - i][kingCol + i]
                 if(tempPiece == sign * -5 or tempPiece == sign * -2):
                     return True
                 else if(tempPiece * sign > 0):
@@ -214,7 +213,7 @@ class Chessboard:
     kingInDanger(Chessboard b, currentTurn):
         return b.kingInDanger(currentTurn) # returns True if king is in danger on board b for specified turn
     
-    move(int startRow, int startCol, int endRow, int endCol):
+    move(startRow, startCol, endRow, endCol):
         
         # if valid move
         if(checkMove(startRow, startCol, endRow, endCol)):
@@ -266,8 +265,8 @@ class Chessboard:
      * @param col the current column of piece
      * @return List of containing the endRow and endCol of each possible move
      """
-    ArrayList<int[]> getMoves(int row, int col){
-        int piece = board[row][col]
+    ArrayList<int[]> getMoves(row, col){
+        piece = board[row][col]
         
         switch (piece):
             case 1:
@@ -295,7 +294,7 @@ class Chessboard:
     
     ArrayList<int[]> getAllMoves(CurrentTurn){
         # TODO implement
-        # TODO change get moves method to return array list of int arrays
+        # TODO change get moves method to return array list of arrays
         # of the form:startRow, startCol, endRow, endCol
         return new ArrayList<int[]>()
     
@@ -324,10 +323,10 @@ class Chessboard:
             
         
     
-    enPassant(int row, int col):
+    enPassant(row, col):
         board[row][col] = 0
     
-    movePiece(int startRow, int startCol, int endRow, int endCol): # TODO check movePiece
+    movePiece(startRow, startCol, endRow, endCol): # TODO check movePiece
         
         # reset enPassant if reset flag is set
         if(canEnPassant[2] != 0):
@@ -336,7 +335,7 @@ class Chessboard:
         
         canEnPassant[2] = 1 # reset next move
         
-        int piece = board[startRow][startCol]
+        piece = board[startRow][startCol]
         
         if(piece == 6 and endRow == 7 and startRow == 7 and startCol == 4 and endCol == 7 and board[7][7] == 2):
             castle("white", "kingside")
@@ -357,14 +356,14 @@ class Chessboard:
         board[endRow][endCol] = piece
         whiteToMove = !whiteToMove
     
-    Chessboard movePieceNoCheck(int startRow, int startCol, int endRow, int endCol):
+    Chessboard movePieceNoCheck(startRow, startCol, endRow, endCol):
         Chessboard output = this.clone() # clone is redundant but for safety
         output.movePiece(startRow, startCol, endRow, endCol)
         return output
     
-    checkMove(int startRow, int startCol, int endRow, int endCol):
+    checkMove(startRow, startCol, endRow, endCol):
         
-        int piece = board[startRow][startCol]
+        piece = board[startRow][startCol]
         
         # if incorrect turn
         if((piece < 0 and whiteToMove) or (piece > 0 and !whiteToMove)):
@@ -415,9 +414,9 @@ class Chessboard:
                 return False
         
     
-    checkMoveBishop(int startRow, int startCol, int endRow, int endCol):
-        int rowDiff = endRow - startRow
-        int colDiff = endCol - startCol
+    checkMoveBishop(startRow, startCol, endRow, endCol):
+        rowDiff = endRow - startRow
+        colDiff = endCol - startCol
         
         # if not moving diagonally
         if(Math.abs(rowDiff) != Math.abs(colDiff)):
@@ -426,10 +425,10 @@ class Chessboard:
         
         return isEmptyBetween(startRow, startCol, endRow, endCol)
     
-    checkMoveKing(int startRow, int startCol, int endRow, int endCol):
-        int rowDiff = endRow - startRow
-        int colDiff = endCol - startCol
-        int piece = board[startCol][endCol]
+    checkMoveKing(startRow, startCol, endRow, endCol):
+        rowDiff = endRow - startRow
+        colDiff = endCol - startCol
+        piece = board[startCol][endCol]
         
         if(Math.abs(rowDiff) <= 1 and Math.abs(colDiff) <= 1):
             if(piece > 0):
@@ -471,17 +470,17 @@ class Chessboard:
         
         return False
     
-    checkMoveKnight(int startRow, int startCol, int endRow, int endCol):
-        int rowDiff = endRow - startRow
-        int colDiff = endCol - startCol
+    checkMoveKnight(startRow, startCol, endRow, endCol):
+        rowDiff = endRow - startRow
+        colDiff = endCol - startCol
     
         return Math.abs(rowDiff*colDiff) == 2
     
-    checkMovePawn(int startRow, int startCol, int endRow, int endCol):
+    checkMovePawn(startRow, startCol, endRow, endCol):
         
-        int piece = board[startRow][startCol]
-        int rowDiff = endRow - startRow
-        int colDiff = endCol - startCol
+        piece = board[startRow][startCol]
+        rowDiff = endRow - startRow
+        colDiff = endCol - startCol
         
         
         if(colDiff == 0 and isEmptySquare(endRow, endCol)):
@@ -518,9 +517,9 @@ class Chessboard:
         
         return False
     
-    checkMoveQueen(int startRow, int startCol, int endRow, int endCol):
-        int rowDiff = endRow - startRow
-        int colDiff = endCol - startCol
+    checkMoveQueen(startRow, startCol, endRow, endCol):
+        rowDiff = endRow - startRow
+        colDiff = endCol - startCol
         
         # if not moving diagonally or in a straight line 
         if(Math.abs(rowDiff) != Math.abs(colDiff) and rowDiff * colDiff != 0):
@@ -529,9 +528,9 @@ class Chessboard:
         
         return isEmptyBetween(startRow, startCol, endRow, endCol)
     
-    checkMoveRook(int startRow, int startCol, int endRow, int endCol):
-        int rowDiff = endRow - startRow
-        int colDiff = endCol - startCol
+    checkMoveRook(startRow, startCol, endRow, endCol):
+        rowDiff = endRow - startRow
+        colDiff = endCol - startCol
         
         # if not moving in a straight line
         if(rowDiff * colDiff != 0):
@@ -557,7 +556,7 @@ class Chessboard:
         return False
         
     
-    ArrayList<int[]> getMovesBishop(int row, int col){
+    ArrayList<int[]> getMovesBishop(row, col){
         ArrayList<int[]> output = new ArrayList<int[]>(14)
         for i in range(8):
             if(!outOfBounds(row + i, col + i)):
@@ -605,7 +604,7 @@ class Chessboard:
         # TODO make bishop get moves more efficient
         return output
     
-    ArrayList<int[]> getMovesKing(int kingRow, int kingCol){
+    ArrayList<int[]> getMovesKing(kingRow, kingCol){
         ArrayList<int[]> output = new ArrayList<int[]>(10)
         
         for row in range(-1, 2):
@@ -623,7 +622,7 @@ class Chessboard:
         
         return output
     
-    ArrayList<int[]> getMovesKnight(int knightRow, int knightCol){
+    ArrayList<int[]> getMovesKnight(knightRow, knightCol){
         ArrayList<int[]> output = new ArrayList<int[]>(8)
         
         for row in range(-2, 3):
@@ -641,7 +640,7 @@ class Chessboard:
         
         return output
     
-    ArrayList<int[]> getMovesPawn(int row, int col){
+    ArrayList<int[]> getMovesPawn(row, col){
         ArrayList<int[]> output = new ArrayList<int[]>(4)
         
         if(!outOfBounds(row, col)):
@@ -698,7 +697,7 @@ class Chessboard:
         
         return output
     
-    ArrayList<int[]> getMovesQueen(int queenRow, int queenCol){
+    ArrayList<int[]> getMovesQueen(queenRow, queenCol){
         ArrayList<int[]> output = new ArrayList<int[]>(14)
         
         for row in range(8):
@@ -766,7 +765,7 @@ class Chessboard:
         
         return output
     
-    ArrayList<int[]> getMovesRook(int rookRow, int rookCol){
+    ArrayList<int[]> getMovesRook(rookRow, rookCol){
         ArrayList<int[]> output = new ArrayList<int[]>(14)
         
         for row in range(8):
@@ -789,13 +788,13 @@ class Chessboard:
         
         return output
     
-    isEmptySquare(int row, int col):
+    isEmptySquare(row, col):
         return (board[row][col] == 0)
     
-    isEmptyBetween(int startRow, int startCol, int endRow, int endCol): # TODO check isEmptyBetween
+    isEmptyBetween(startRow, startCol, endRow, endCol): # TODO check isEmptyBetween
         # checks if the squares STRICTLY BETWEEN the starting and ending squares are empty
-        int rowDiff = endRow - startRow
-        int colDiff = endCol - startCol
+        rowDiff = endRow - startRow
+        colDiff = endCol - startCol
         
         # if not moving diagonally or vertically or horizontally
         if(Math.abs(rowDiff) != Math.abs(colDiff) and rowDiff * colDiff != 0):
@@ -838,14 +837,14 @@ class Chessboard:
         
         return True
     
-    isEnemySquare(int piece, int row, int col):
+    isEnemySquare(piece, row, col):
         return (piece * board[row][col] < 0)
     
-    isSafeBetween(int startRow, int startCol, int endRow, int endCol): # TODO check isSafeBetween
+    isSafeBetween(startRow, startCol, endRow, endCol): # TODO check isSafeBetween
         # checks if the squares STRICTLY BETWEEN the starting and ending squares are safe for king to cross
         
-        int rowDiff = endRow - startRow
-        int colDiff = endCol - startCol
+        rowDiff = endRow - startRow
+        colDiff = endCol - startCol
 
         if(Math.abs(rowDiff) != Math.abs(colDiff) and rowDiff * colDiff != 0):
             return False
@@ -892,23 +891,15 @@ class Chessboard:
         
         return True
     
-    outOfBounds(int row, int col):
+    outOfBounds(row, col):
         # makes sure a is a valid row or column
         return (row < 0 or row > 7 or col < 0 or col > 7)
     
-    movingForwardOne(int piece, int rowDiff):
+    movingForwardOne(piece, rowDiff):
         return (rowDiff * piece < 0 and Math.abs(rowDiff) == 1)
     
-    setUpBoard():
-        board = getNewBoard()
-        canEnPassant = getNewEnPassant()
-        whiteToMove = True
-        canCastle = new boolean[4]
-        for i in range(4):
-            canCastle[i] = True
-        
     
-    getNewBoard():
+    def getNewBoard():
         output = 
            [[-2, -3, -4, -5, -6, -4, -3, -2],
             [-1, -1, -1, -1, -1, -1, -1, -1],
@@ -921,19 +912,15 @@ class Chessboard:
         
         return output
     
-    copyBoard(Chessboard from):
+    # copies the board from pychess object to current pychess object
+    def copyBoard(board_to_copy):
         for row in range(8):
             for col in range(8):
-                this.board[row][col] = from.board[row][col]
+                self.board[row][col] = board_to_copy.board[row][col]
             
-        
     
-    getNewEnPassant(){
-        output = [-1, -1, 0]
-        return output
-    
-    setEnPassant(int row, int col, int reset):
-        canEnPassant[0] = row
-        canEnPassant[1] = col
-        canEnPassant[2] = reset
+    def setEnPassant(self, row, col, reset):
+        self.canEnPassant[0] = row
+        self.canEnPassant[1] = col
+        self.canEnPassant[2] = reset
     
