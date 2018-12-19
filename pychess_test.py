@@ -1,8 +1,8 @@
 import unittest
-from pychess import pychess
+from pychess_board import pychess_board
 
 
-class pychess_test(unittest.TestCase):
+class pychess_board_test(unittest.TestCase):
 
     def assertBoardsEqual(self, a, b):
         print("hello")
@@ -15,19 +15,19 @@ class pychess_test(unittest.TestCase):
         
 
     def test_Rook_Movement_In_Starting_Position(self):
-        cb = pychess()
+        cb = pychess_board()
         
         # top right rook
         for i in range(8):
             for j in range(8):
                 cb.move(0, 7, i, j)
-                assertBoardsEqual(cb, pychess())
+                assertBoardsEqual(cb, pychess_board())
                 cb.move(0, 0, i, j)
-                assertBoardsEqual(cb, pychess())
+                assertBoardsEqual(cb, pychess_board())
                 cb.move(7, 0, i, j)
-                assertBoardsEqual(cb, pychess())
+                assertBoardsEqual(cb, pychess_board())
                 cb.move(7, 7, i, j)
-                assertBoardsEqual(cb, pychess())
+                assertBoardsEqual(cb, pychess_board())
         
     
 
