@@ -1,78 +1,74 @@
 import unittest
-import pychess
+from pychess import pychess
 
 
-class ChessboardTest(unittest.TestCase):
+class pychess_test(unittest.TestCase):
 
+    def assertBoardsEqual(self, a, b):
+        print("hello")
+        boardA = a.getBoard()
+        boardB = b.getBoard()
+        
+        for i in range(len(boardA)):
+            for j in range(len(boardA[0])):
+                self.assertEqual(boardA[i][j], boardB[i][j])
+        
 
-    def Test_Rook_Movement_In_Starting_Position(self):
-        cb = new Chessboard()
+    def test_Rook_Movement_In_Starting_Position(self):
+        cb = pychess()
         
         # top right rook
-        for(int i = 0 i < 8 i++) :
-            for(int j = 0 j < 8 j++) :
+        for i in range(8):
+            for j in range(8):
                 cb.move(0, 7, i, j)
-                assertBoardsEqual(cb, new Chessboard())
-            
-        
-        
-        # top left rook
-        for(int i = 0 i < 8 i++) :
-            for(int j = 0 j < 8 j++) :
+                assertBoardsEqual(cb, pychess())
                 cb.move(0, 0, i, j)
-                assertBoardsEqual(cb, new Chessboard())
-            
-        
-        
-        # bottom left rook
-        for(int i = 0 i < 8 i++) :
-            for(int j = 0 j < 8 j++) :
+                assertBoardsEqual(cb, pychess())
                 cb.move(7, 0, i, j)
-                assertBoardsEqual(cb, new Chessboard())
-            
-        
-        
-        # bottom right rook
-        for(int i = 0 i < 8 i++) :
-            for(int j = 0 j < 8 j++) :
+                assertBoardsEqual(cb, pychess())
                 cb.move(7, 7, i, j)
-                assertBoardsEqual(cb, new Chessboard())
-            
+                assertBoardsEqual(cb, pychess())
         
- """       
+    
+
+    
+if __name__ == '__main__':
+    unittest.main()
+
+"""       
     
     @Test
     @DisplayName("testing starting position bishop movement")
-    void Test_Bishop_Movement_In_Starting_Position() :
+    void Test_Bishop_Movement_In_Starting_Position():
         Chessboard cb = new Chessboard()
         
         # bottom left bishop
-        for(int i = 0 i < 8 i++) :
-            for(int j = 0 j < 8 j++) :
+        for(int i = 0 i < 8 i++):
+            for(int j = 0 j < 8 j++):
                 cb.move(7, 2, i, j)
                 assertBoardsEqual(cb, new Chessboard())
             
         
         
         # top left bishop
-        for(int i = 0 i < 8 i++) :
-            for(int j = 0 j < 8 j++) :
+        for(int i = 0 i < 8 i++):
+            for(int j = 0 j < 8 j++):
                 cb.move(0, 2, i, j)
                 assertBoardsEqual(cb, new Chessboard())
             
         
         
         # top right bishop
-        for(int i = 0 i < 8 i++) :
-            for(int j = 0 j < 8 j++) :
+        for(int i = 0 i < 8 i++):
+            for(int j = 0 j < 8 j++):
                 cb.move(0, 5, i, j)
                 assertBoardsEqual(cb, new Chessboard())
             
         
         
         # bottom right bishop
-        for(int i = 0 i < 8 i++) :
-            for(int j = 0 j < 8 j++) :
+        for(int i = 0 i < 8 i++):
+            for(int j = 0 j < 8 j++):
                 cb.move(7, 5, i, j)
                 assertBoardsEqual(cb, new Chessboard())
             
@@ -81,20 +77,20 @@ class ChessboardTest(unittest.TestCase):
     
     @Test
     @DisplayName("testing starting position king movement")
-    void Test_King_Movement_In_Starting_Position() :
+    void Test_King_Movement_In_Starting_Position():
         Chessboard cb = new Chessboard()
 
         # white king
-        for(int i = 0 i < 8 i++) :
-            for(int j = 0 j < 8 j++) :
+        for(int i = 0 i < 8 i++):
+            for(int j = 0 j < 8 j++):
                 cb.move(7, 4, i, j)
                 assertBoardsEqual(cb, new Chessboard())
             
         
         
         # black king
-        for(int i = 0 i < 8 i++) :
-            for(int j = 0 j < 8 j++) :
+        for(int i = 0 i < 8 i++):
+            for(int j = 0 j < 8 j++):
                 cb.move(0, 4, i, j)
                 assertBoardsEqual(cb, new Chessboard())
             
@@ -103,20 +99,20 @@ class ChessboardTest(unittest.TestCase):
     
     @Test
     @DisplayName("testing starting position queen movement")
-    void Test_Queen_Movement_In_Starting_Position() :
+    void Test_Queen_Movement_In_Starting_Position():
         Chessboard cb = new Chessboard()
         
         # black queen
-        for(int i = 0 i < 8 i++) :
-            for(int j = 0 j < 8 j++) :
+        for(int i = 0 i < 8 i++):
+            for(int j = 0 j < 8 j++):
                 cb.move(0, 3, i, j)
                 assertBoardsEqual(cb, new Chessboard())
             
         
         
         # white queen
-        for(int i = 0 i < 8 i++) :
-            for(int j = 0 j < 8 j++) :
+        for(int i = 0 i < 8 i++):
+            for(int j = 0 j < 8 j++):
                 cb.move(7, 3, i, j)
                 assertBoardsEqual(cb, new Chessboard())
             
@@ -125,15 +121,15 @@ class ChessboardTest(unittest.TestCase):
     
     @Test
     @DisplayName("testing starting position pawn movement")
-    void Test_Pawn_Movement_In_Starting_Position() :
+    void Test_Pawn_Movement_In_Starting_Position():
         
         Chessboard cb = new Chessboard()
 
         # test all black pawns to make sure they don't move (bc not their turn)
         int pawnRow = 2 
-        for(int pawnCol = 0 pawnCol < 8 pawnCol++) :
-            for(int i = 0 i < 8 i++) :
-                for(int j = 0 j < 8 j++) :
+        for(int pawnCol = 0 pawnCol < 8 pawnCol++):
+            for(int i = 0 i < 8 i++):
+                for(int j = 0 j < 8 j++):
                     cb.move(pawnRow, pawnCol, i, j)
                     assertBoardsEqual(cb, new Chessboard())
                 
@@ -141,15 +137,15 @@ class ChessboardTest(unittest.TestCase):
         
         
         pawnRow = 6 
-        for(int pawnCol = 0 pawnCol < 8 pawnCol++) :
-            for(int toRow = 0 toRow < 8 toRow++) :
-                for(int toCol = 0 toCol < 8 toCol++) :
+        for(int pawnCol = 0 pawnCol < 8 pawnCol++):
+            for(int toRow = 0 toRow < 8 toRow++):
+                for(int toCol = 0 toCol < 8 toCol++):
                     cb.move(pawnRow, pawnCol, toRow, toCol)
                     
-                    if((toRow == 5 || toRow == 4) && pawnCol - toCol == 0) :
+                    if((toRow == 5 || toRow == 4) && pawnCol - toCol == 0):
                         assertBoardsEqual(cb, move(pawnRow, pawnCol, toRow, toCol, new Chessboard()))
                         cb = new Chessboard()
-                    else :
+                    else:
                         assertBoardsEqual(cb, new Chessboard())
                     
                 
@@ -160,20 +156,20 @@ class ChessboardTest(unittest.TestCase):
     
     @Test
     @DisplayName("testing starting position knight movement")
-    void Test_Knight_Movement_In_Starting_Position() :
+    void Test_Knight_Movement_In_Starting_Position():
         
         Chessboard cb = new Chessboard()
         
         # black knights not supposed to move on first turn
-        for(int i = 0 i < 8 i++) :
-            for(int j = 0 j < 8 j++) :
+        for(int i = 0 i < 8 i++):
+            for(int j = 0 j < 8 j++):
                 cb.move(0, 1, i, j)
                 assertBoardsEqual(cb, new Chessboard())
             
         
         
-        for(int i = 0 i < 8 i++) :
-            for(int j = 0 j < 8 j++) :
+        for(int i = 0 i < 8 i++):
+            for(int j = 0 j < 8 j++):
                 cb.move(0, 6, i, j)
                 assertBoardsEqual(cb, new Chessboard())
             
@@ -181,26 +177,26 @@ class ChessboardTest(unittest.TestCase):
         
         
         # white knights
-        for(int i = 0 i < 8 i++) :
-            for(int j = 0 j < 8 j++) :
+        for(int i = 0 i < 8 i++):
+            for(int j = 0 j < 8 j++):
                 cb.move(7, 1, i, j)
-                if((i == 5 && j == 0) ||(i == 5 && j == 2)) :
+                if((i == 5 && j == 0) ||(i == 5 && j == 2)):
                     assertBoardsEqual(cb, move(7, 1, i, j, new Chessboard()))
                     cb = new Chessboard()
-                else :
+                else:
                     assertBoardsEqual(cb, new Chessboard())
                 
             
         
         
         
-        for(int i = 0 i < 8 i++) :
-            for(int j = 0 j < 8 j++) :
+        for(int i = 0 i < 8 i++):
+            for(int j = 0 j < 8 j++):
                 cb.move(7, 6, i, j)
-                if((i == 5 && j == 5) || (i == 5 && j == 7)) :
+                if((i == 5 && j == 5) || (i == 5 && j == 7)):
                     assertBoardsEqual(cb, move(7, 6, i, j, new Chessboard()))
                     cb = new Chessboard()
-                else :
+                else:
                     assertBoardsEqual(cb, new Chessboard())
                 
             
@@ -225,7 +221,7 @@ class ChessboardTest(unittest.TestCase):
     # FIXME make sure chessboard follows real game moves
     @Test
     @DisplayName("Simple Game 1")
-    void Simple_Game_1() :
+    void Simple_Game_1():
         Chessboard cb = new Chessboard()
         Chessboard tester = new Chessboard()
         
@@ -256,7 +252,7 @@ class ChessboardTest(unittest.TestCase):
     
     @Test
     @DisplayName("Simple Game 2")
-    void Simple_Game_2() :
+    void Simple_Game_2():
         Chessboard cb = new Chessboard()
         Chessboard tester = new Chessboard()
         
@@ -485,12 +481,3 @@ class ChessboardTest(unittest.TestCase):
     # test whether boards are equal
     
 """
-
-def assertBoardsEqual(a, b) :
-    boardA = a.getBoard()
-    boardB = b.getBoard()
-    
-    for i in range(len(boardA)):
-        for j in range(len(boardA[0])):
-            assertEqual(boardA[i][j], boardB[i][j])
-        

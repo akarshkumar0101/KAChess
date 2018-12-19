@@ -1,4 +1,3 @@
-import java.util.ArrayList
 
 class pychess():
     # FIXME things like checkmate, stalemate, and promotion
@@ -23,19 +22,19 @@ class pychess():
      *    : 0,  0,  0,  0,  0,  0,  0,  0
      *    : 1,  1,  1,  1,  1,  1,  1,  1
      * : 2,  3,  4,  5,  6,  4,  3,  2
-     """
+     
     
     self.board
     self.canEnPassant #:row, col, resetNextTurn if no row/col, set to -1. reset on 1, don't on 0
     self.whiteToMove
     self.canCastle #: [whiteKingside, whiteQueenside, blackKingside, blackQueenside] boolean array
-    
+    """
     # constructor # # # # # # # # # # # # # # # # # 
     
     def __init__(self, board_setup = None, to_move = True):
         
         if(board_setup == None):
-            self.board = getNewBoard()
+            self.board = [[-2, -3, -4, -5, -6, -4, -3, -2],[-1, -1, -1, -1, -1, -1, -1, -1],[ 0,  0,  0,  0,  0,  0,  0,  0],[ 0,  0,  0,  0,  0,  0,  0,  0],[ 0,  0,  0,  0,  0,  0,  0,  0],[ 0,  0,  0,  0,  0,  0,  0,  0],[ 1,  1,  1,  1,  1,  1,  1,  1],[ 2,  3,  4,  5,  6,  4,  3,  2]]
         else:
             self.board = board_setup
         
@@ -213,7 +212,7 @@ class pychess():
     def kingInDanger(pychessboard, currentTurn):
         return pychessboard.kingInDanger(currentTurn) # returns True if king is in danger on board b for specified turn
     
-    def move(startRow, startCol, endRow, endCol):
+    def move(self, startRow, startCol, endRow, endCol):
         
         # if valid move
         if(checkMove(startRow, startCol, endRow, endCol)):
@@ -411,7 +410,7 @@ class pychess():
         
         return isEmptyBetween(startRow, startCol, endRow, endCol)
     
-    def heckMoveKing(startRow, startCol, endRow, endCol):
+    def checkMoveKing(startRow, startCol, endRow, endCol):
         rowDiff = endRow - startRow
         colDiff = endCol - startCol
         piece = board[startCol][endCol]
@@ -794,9 +793,6 @@ class pychess():
     def movingForwardOne(piece, rowDiff):
         return (rowDiff * piece < 0 and Math.abs(rowDiff) == 1)
     
-    
-    def getNewBoard():
-        return [[-2, -3, -4, -5, -6, -4, -3, -2],[-1, -1, -1, -1, -1, -1, -1, -1],[ 0,  0,  0,  0,  0,  0,  0,  0],[ 0,  0,  0,  0,  0,  0,  0,  0],[ 0,  0,  0,  0,  0,  0,  0,  0],[ 0,  0,  0,  0,  0,  0,  0,  0],[ 1,  1,  1,  1,  1,  1,  1,  1],[ 2,  3,  4,  5,  6,  4,  3,  2]]
     
     # copies the board from pychess object to current pychess object
     def copyBoard(board_to_copy):
