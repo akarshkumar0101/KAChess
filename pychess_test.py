@@ -30,179 +30,104 @@ class pychess_board_test(unittest.TestCase):
                 assertBoardsEqual(cb, pychess_board())
         
     
-
-    
-if __name__ == '__main__':
-    unittest.main()
-
-"""       
-    
-    @Test
-    @DisplayName("testing starting position bishop movement")
-    void Test_Bishop_Movement_In_Starting_Position():
-        Chessboard cb = new Chessboard()
+    def test_Bishop_Movement_In_Starting_Position(self):
+        cb = pychess_board
         
         # bottom left bishop
-        for(int i = 0 i < 8 i++):
-            for(int j = 0 j < 8 j++):
-                cb.move(7, 2, i, j)
-                assertBoardsEqual(cb, new Chessboard())
-            
-        
-        
-        # top left bishop
-        for(int i = 0 i < 8 i++):
-            for(int j = 0 j < 8 j++):
+        for i in range(8):
+            for j in range(8):
+                cb.move(cb, 7, 2, i, j)
+                assertBoardsEqual(cb, pychess_board())
                 cb.move(0, 2, i, j)
-                assertBoardsEqual(cb, new Chessboard())
-            
-        
-        
-        # top right bishop
-        for(int i = 0 i < 8 i++):
-            for(int j = 0 j < 8 j++):
+                assertBoardsEqual(cb, pychess_board())
                 cb.move(0, 5, i, j)
-                assertBoardsEqual(cb, new Chessboard())
-            
-        
-        
-        # bottom right bishop
-        for(int i = 0 i < 8 i++):
-            for(int j = 0 j < 8 j++):
+                assertBoardsEqual(cb, pychess_board())
                 cb.move(7, 5, i, j)
-                assertBoardsEqual(cb, new Chessboard())
-            
-        
-        
-    
-    @Test
-    @DisplayName("testing starting position king movement")
-    void Test_King_Movement_In_Starting_Position():
-        Chessboard cb = new Chessboard()
+                assertBoardsEqual(cb, pychess_board())
 
-        # white king
-        for(int i = 0 i < 8 i++):
-            for(int j = 0 j < 8 j++):
+    
+    def test_King_Movement_In_Starting_Position(self):
+        cb = pychess_board()
+
+        for i in range(8):
+            for j in range(8):
                 cb.move(7, 4, i, j)
-                assertBoardsEqual(cb, new Chessboard())
-            
-        
-        
-        # black king
-        for(int i = 0 i < 8 i++):
-            for(int j = 0 j < 8 j++):
+                assertBoardsEqual(cb, pychess_board())
                 cb.move(0, 4, i, j)
-                assertBoardsEqual(cb, new Chessboard())
-            
-        
+                assertBoardsEqual(cb, pychess_board())
         
     
-    @Test
-    @DisplayName("testing starting position queen movement")
-    void Test_Queen_Movement_In_Starting_Position():
-        Chessboard cb = new Chessboard()
+    def test_Queen_Movement_In_Starting_Position(self):
+        cb = pychess_board()
         
         # black queen
-        for(int i = 0 i < 8 i++):
-            for(int j = 0 j < 8 j++):
+        for i in range(8):
+            for j in range(8):
                 cb.move(0, 3, i, j)
-                assertBoardsEqual(cb, new Chessboard())
-            
-        
-        
-        # white queen
-        for(int i = 0 i < 8 i++):
-            for(int j = 0 j < 8 j++):
+                assertBoardsEqual(cb, pychess_board())
                 cb.move(7, 3, i, j)
-                assertBoardsEqual(cb, new Chessboard())
+                assertBoardsEqual(cb, pychess_board())
             
-        
-        
     
-    @Test
-    @DisplayName("testing starting position pawn movement")
-    void Test_Pawn_Movement_In_Starting_Position():
+    def test_Pawn_Movement_In_Starting_Position(self):
         
-        Chessboard cb = new Chessboard()
+        cb = pychess_board()
 
         # test all black pawns to make sure they don't move (bc not their turn)
-        int pawnRow = 2 
-        for(int pawnCol = 0 pawnCol < 8 pawnCol++):
-            for(int i = 0 i < 8 i++):
-                for(int j = 0 j < 8 j++):
+        pawnRow = 2 
+        for pawnCol in range(8):
+            for i in range(8):
+                for j in range(8):
                     cb.move(pawnRow, pawnCol, i, j)
-                    assertBoardsEqual(cb, new Chessboard())
+                    assertBoardsEqual(cb, pychess_board())
                 
             
         
         
         pawnRow = 6 
-        for(int pawnCol = 0 pawnCol < 8 pawnCol++):
-            for(int toRow = 0 toRow < 8 toRow++):
-                for(int toCol = 0 toCol < 8 toCol++):
+        for pawnCol in range(8):
+            for toRow in range(8):
+                for toCol in range(8):
                     cb.move(pawnRow, pawnCol, toRow, toCol)
                     
-                    if((toRow == 5 || toRow == 4) && pawnCol - toCol == 0):
-                        assertBoardsEqual(cb, move(pawnRow, pawnCol, toRow, toCol, new Chessboard()))
-                        cb = new Chessboard()
+                    if((toRow == 5 or toRow == 4) and pawnCol - toCol == 0):
+                        assertBoardsEqual(cb, move(pawnRow, pawnCol, toRow, toCol, pychess_board()))
+                        cb = pychess_board()
                     else:
-                        assertBoardsEqual(cb, new Chessboard())
+                        assertBoardsEqual(cb, pychess_board())
                     
-                
-            
-        
-        
-        
     
-    @Test
-    @DisplayName("testing starting position knight movement")
-    void Test_Knight_Movement_In_Starting_Position():
+    def test_Knight_Movement_In_Starting_Position(self):
         
-        Chessboard cb = new Chessboard()
+        cb = pychess_board()
         
         # black knights not supposed to move on first turn
-        for(int i = 0 i < 8 i++):
-            for(int j = 0 j < 8 j++):
+        for i in range(8):
+            for j in range(8):
                 cb.move(0, 1, i, j)
-                assertBoardsEqual(cb, new Chessboard())
-            
-        
-        
-        for(int i = 0 i < 8 i++):
-            for(int j = 0 j < 8 j++):
+                assertBoardsEqual(cb, pychess_board())
                 cb.move(0, 6, i, j)
-                assertBoardsEqual(cb, new Chessboard())
-            
-        
+                assertBoardsEqual(cb, pychess_board())
         
         
         # white knights
-        for(int i = 0 i < 8 i++):
-            for(int j = 0 j < 8 j++):
+        for i in range(8):
+            for j in range(8):
+                
                 cb.move(7, 1, i, j)
-                if((i == 5 && j == 0) ||(i == 5 && j == 2)):
-                    assertBoardsEqual(cb, move(7, 1, i, j, new Chessboard()))
-                    cb = new Chessboard()
+                if((i == 5 and j == 0) or(i == 5 and j == 2)):
+                    assertBoardsEqual(cb, move(7, 1, i, j, pychess_board()))
+                    cb = pychess_board()
                 else:
-                    assertBoardsEqual(cb, new Chessboard())
+                    assertBoardsEqual(cb, pychess_board())
                 
-            
-        
-        
-        
-        for(int i = 0 i < 8 i++):
-            for(int j = 0 j < 8 j++):
                 cb.move(7, 6, i, j)
-                if((i == 5 && j == 5) || (i == 5 && j == 7)):
-                    assertBoardsEqual(cb, move(7, 6, i, j, new Chessboard()))
-                    cb = new Chessboard()
+                if((i == 5 and j == 5) or (i == 5 and j == 7)):
+                    assertBoardsEqual(cb, move(7, 6, i, j, pychess_board()))
+                    cb = pychess_board()
                 else:
-                    assertBoardsEqual(cb, new Chessboard())
-                
+                    assertBoardsEqual(cb, pychess_board())
             
-        
-        
-    
     
     # TODO write tests when king is in check
     
@@ -218,12 +143,11 @@ if __name__ == '__main__':
     
     # TODO test get moves
     
-    # FIXME make sure chessboard follows real game moves
-    @Test
-    @DisplayName("Simple Game 1")
-    void Simple_Game_1():
-        Chessboard cb = new Chessboard()
-        Chessboard tester = new Chessboard()
+    # FIXME make sure follows real game moves
+    
+    def test_Simple_Game_1(self):
+        cb = pychess_board()
+        tester = pychess_board()
         
         cb.move(6, 4, 4 ,4)
         tester = move(6, 4, 4, 4, tester)
@@ -250,11 +174,10 @@ if __name__ == '__main__':
         assertBoardsEqual(cb, tester)
     
     
-    @Test
-    @DisplayName("Simple Game 2")
-    void Simple_Game_2():
-        Chessboard cb = new Chessboard()
-        Chessboard tester = new Chessboard()
+    
+    def test_Simple_Game_2(self):
+        cb = pychess_board()
+        tester = pychess_board()
         
         # uses en passant
         
@@ -468,16 +391,19 @@ if __name__ == '__main__':
         
     
     
-    # moves piece on Chessboard for easy testing
-    private Chessboard move(int startRow, int startCol, int endRow, int endCol, Chessboard b):
-        int[][] output = b.getBoard()
-        int piece = output[startRow][startCol]
+    # moves piece on for easy testing
+    def move(startRow, startCol, endRow, endCol, b):
+        output = b.getBoard()
+        piece = output[startRow][startCol]
         output[startRow][startCol] = 0
         output[endRow][endCol] = piece
-        return new Chessboard(output, True)
+        return pychess_board(output, True)
     
     
     # given: board dimensions are equal
     # test whether boards are equal
+
+
     
-"""
+if __name__ == '__main__':
+    unittest.main()
