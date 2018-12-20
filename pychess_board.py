@@ -29,7 +29,7 @@ class pychess_board():
     self.board
     self.enPassantable #:row, col -- if no row/col, set to -1. reset on 1, don't on 0
     self.resetEnPassant -- enPassantable register to be reset next turn
-    self.whiteToMove
+    self.white_to_move
     self.canCastle #: [whiteKingside, whiteQueenside, blackKingside, blackQueenside] boolean array
     """
     
@@ -47,7 +47,7 @@ class pychess_board():
         else:
             self.board = board_setup
         
-        self.whiteToMove = white_to_move
+        self.white_to_move = white_to_move
         
         self.enPassantable = [-1, -1]
         self.resetEnPassant = 0
@@ -76,7 +76,7 @@ class pychess_board():
         kingRow = -1
         kingCol = -1
         
-        if(currentTurn == self.whiteToMove):
+        if(currentTurn == self.white_to_move):
             sign = 1
         else:
             sign = -1
@@ -252,7 +252,7 @@ class pychess_board():
     def clone(self):
         output = pychess_board()
         
-        output.whiteToMove = self.whiteToMove
+        output.white_to_move = self.white_to_move
         
         for i in range(2):
             output.enPassantable[i] = self.enPassantable[i]
@@ -263,17 +263,18 @@ class pychess_board():
         
         return output
     
-    
-    ## returns a list of all possible moves. each move is a list [current_row, current_col, end_row, end_col]
-    
-    def get_possible_moves(self, CurrentTurn=True):
-        # TODO implement
-        # TODO change get moves method to return array list of arrays
-        # of the form:startRow, startCol, endRow, endCol
-        return []
-    
-    # methods # # # # # # # # # # # # # # # # # 
-    
+    def get_possible_moves(self, whites_move = None): # returns a list of all possible moves. each move is a list [current_row, current_col, end_row, end_col]
+        if(whites_move == None):
+            return self.get_possible_moves(self.white_to_move)
+        else:
+            output = []
+            for row in range(8):
+                for col in range(8):
+                    if((self.board[row][col] > 0) == whites_move):
+                        output.extend(self.__get_moves(row, col))
+                        
+            return output
+        
     def copy_board(self, chessboard_to_copy):
         for row in range(8):
             for col in range(8):
@@ -318,22 +319,21 @@ class pychess_board():
         
         self.board[startRow][startCol] = 0 # move piece
         self.board[endRow][endCol] = piece
-        self.whiteToMove = not self.whiteToMove
+        self.white_to_move = not self.white_to_move
     
     def __move_piece_no_check(self, startRow, startCol, endRow, endCol): # returns a new pychess_board object with the piece moved regardless if it is a legal move
         output = self.clone() # clone is redundant but for safety
         output.__move_piece(startRow, startCol, endRow, endCol)
         return output
     
-    
-    
+                    
     """methods to check if moves are legal. All methods return a boolean"""
     def __check_move(self, startRow, startCol, endRow, endCol):
         
         piece = self.board[startRow][startCol]
         
         # if incorrect turn
-        if((piece < 0) == self.whiteToMove):
+        if((piece < 0) == self.white_to_move):
             return False
         
         # if starting or ending squares are out of bounds
@@ -522,17 +522,17 @@ class pychess_board():
         piece = board[row][col]
         
         if(piece == 1 or piece == -1):
-            return getMovesPawn(row, col)
+            return self.__get_moves_pawn(row, col)
         elif(piece == 2 or piece == -2):
-            return getMovesRook(row, col)
+            return self.__get_moves_rook(row, col)
         elif(piece == 3 or piece == -3):
-            return getMovesKnight(row, col)
+            return self.__get_moves_knight(row, col)
         elif(piece == 4 or piece == -4):
-            return getMovesBishop(row, col)
+            return self.__get_moves_bishop(row, col)
         elif(piece == 5 or piece == -5):
-            return getMovesQueen(row, col)
+            return self.__get_moves_queen(row, col)
         elif(piece == 6 or piece == -6):
-            return getMovesKing(row, col)
+            return self.__get_moves_king(row, col)
         else:
             return []
     
@@ -540,16 +540,16 @@ class pychess_board():
         output = []
         for i in range(8):
             if(checkMove(row, col, row + i, col + i)):
-                output.add(newMove(row + i, col + i))
+                output.append(newMove(row + i, col + i))
             
             if(checkMove(row, col, row - i, col + i)):
-                output.add(newMove(row - i, col + i))
+                output.append(newMove(row - i, col + i))
             
             if(checkMove(row, col, row + i, col - i)):
-                output.add(newMove(row + i, col - i))
+                output.append(newMove(row + i, col - i))
             
             if(checkMove(row, col, row - i, col - i)):
-                output.add(newMove(row - i, col - i))
+                output.append(newMove(row - i, col - i))
         
         return output
     
@@ -558,14 +558,10 @@ class pychess_board():
         
         for row in range(-1, 2):
             for col in range(-1, 2):
-                if(not outOfBounds(kingRow + row, kingCol + col)):
-                    if(checkMove(kingRow, kingCol, kingRow + row, kingCol + col)):
-                        temp = []
-                        temp.add(kingRow + row)
-                        temp.add(kingCol + col)
-                        output.add(temp)
-                    
+                if(checkMove(kingRow, kingCol, kingRow + row, kingCol + col)):
+                    output.append(newMove(kingRow + row,kingCol + col))
                 
+            
             
         
         
@@ -576,16 +572,8 @@ class pychess_board():
         
         for row in range(-2, 3):
             for col in range(-2, 3):
-                if(not outOfBounds(knightRow + row, knightCol + col) and np.abs(row*col) == 2):
-                    if(checkMove(knightRow, knightCol, knightRow + row, knightCol + col)):
-                        temp = []
-                        temp.add(knightRow + row)
-                        temp.add(knightCol + col)
-                        output.add(temp)
-                    
-                
-            
-        
+                if(checkMove(knightRow, knightCol, knightRow + row, knightCol + col)):
+                    output.append(newMove(knightRow + row, knightCol + col))
         
         return output
     
@@ -597,30 +585,30 @@ class pychess_board():
             if(self.board[row][col] > 0):
                 
                 if(checkMove(row, col, row -1, col)):
-                    output.add(newMove(row - 1, col))
+                    output.append(newMove(row - 1, col))
                 
                 if(checkMove(row, col, row -1, col + 1)):
-                    output.add(newMove(row - 1, col + 1))
+                    output.append(newMove(row - 1, col + 1))
                 
                 if(checkMove(row, col, row -1, col - 1)):
-                    output.add(newMove(row - 1, col - 1))
+                    output.append(newMove(row - 1, col - 1))
                     
                 if(checkMove(row, col, row -2, col)):
-                    output.add(newMove(row - 2, col))
+                    output.append(newMove(row - 2, col))
                 
             else:
                 
                 if(checkMove(row, col, row + 1, col)):
-                    output.add(newMove(row + 1, col))
+                    output.append(newMove(row + 1, col))
                 
                 if(checkMove(row, col, row + 1, col + 1)):
-                    output.add(newMove(row + 1, col + 1))
+                    output.append(newMove(row + 1, col + 1))
                 
                 if(checkMove(row, col, row + 1, col - 1)):
-                    output.add(newMove(row + 1, col - 1))
+                    output.append(newMove(row + 1, col - 1))
                     
                 if(checkMove(row, col, row + 2, col)):
-                    output.add(newMove(row + 2, col))
+                    output.append(newMove(row + 2, col))
                 
             
         
@@ -634,27 +622,27 @@ class pychess_board():
             
             # down right
             if(checkMove(queenRow, queenCol, queenRow + i, queenCol + i)):
-                output.add(newMove(queenRow + i, queenCol + i))
+                output.append(newMove(queenRow + i, queenCol + i))
         
             # up right
             if(checkMove(queenRow, queenCol, queenRow - i, queenCol + i)):
-                output.add(newMove(queenRow - i, queenCol + i))
+                output.append(newMove(queenRow - i, queenCol + i))
         
             # down left
             if(checkMove(queenRow, queenCol, queenRow + i, queenCol - i)):
-                output.add(newMove(queenRow + i, queenCol - i))
+                output.append(newMove(queenRow + i, queenCol - i))
         
             # up left
             if(checkMove(queenRow, queenCol, queenRow - i, queenCol - i)):
-                output.add(newMove(queenRow - i, queenCol - i))
+                output.append(newMove(queenRow - i, queenCol - i))
         
             # check current column
             if(checkMove(queenRow, queenCol, i, queenCol)):
-                output.add(newMove(i, queenCol))
+                output.append(newMove(i, queenCol))
             
             # check current row
             if(checkMove(queenRow, queenCol, queenRow, i)):
-                output.add(newMove(queenRow, i))
+                output.append(newMove(queenRow, i))
         
         
         return output
@@ -664,10 +652,10 @@ class pychess_board():
         
         for i in range(8):
             if(checkMove(rookRow, rookCol, i, rookCol)):
-                output.add(newMove(i, rookCol))
+                output.append(newMove(i, rookCol))
             
             if(checkMove(rookRow, rookCol,  rookRow, i)):
-                output.add(newMove(rookRow, i))
+                output.append(newMove(rookRow, i))
             
         
         return output
@@ -817,8 +805,8 @@ class pychess_board():
     
     def __new_move(self, row, col):
         output = []
-        output.add(row)
-        output.add(col)
+        output.append(row)
+        output.append(col)
         return output
    
     
