@@ -1,4 +1,5 @@
 import numpy as np
+import copy
 
 class pychess_board():
     # FIXME things like checkmate, stalemate, and promotion
@@ -52,7 +53,7 @@ class pychess_board():
         self.white_to_move = white_to_move
         
         self.enPassantable = [-1, -1]
-        self.resetEnPassant = 0
+        self.resetEnPassant = False
         self.canCastle = [True, True, True, True]
         self.game_complete = False
         self.game_complete_message = ""
@@ -77,34 +78,22 @@ class pychess_board():
         # returns true if move is completed
         startRow = move[0]
         startCol = move[1]
-        endRow = move[2]
-        endCol = move[3]
+        endRow   = move[2]
+        endCol   = move[3]
         
         # if valid move
         if((not self.game_complete) and self.__check_move(startRow, startCol, endRow, endCol)):
             self.__move_piece(startRow, startCol, endRow, endCol)
-            self.__check_game_complete()
+            self.__check_game_complete() # TODO debug
             return True
         
         return False
     
     def get_board(self): 
-        return self.board[:]
+        return copy.deepcopy(self.board)
     
     def clone(self):
-        output = pychess_board()
-        
-        output.white_to_move = self.white_to_move
-        output.enPassantable[0] = self.enPassantable[0]
-        output.enPassantable[1] = self.enPassantable[1]
-        output.resetEnPassant = self.resetEnPassant
-        output.canCastle = self.canCastle
-        output.game_complete = self.game_complete
-        output.game_complete_message = self.game_complete_message
-        output.draw_is_offered = self.draw_is_offered
-        output.board = self.get_board()
-        
-        return output
+        return copy.deepcopy(self)
     
     def to_string(self):
         output = "________________________________________________\n"
@@ -145,6 +134,7 @@ class pychess_board():
     """                                               """
     
     
+    
     """            methods to move pieces             """
     def __move_piece(self, startRow, startCol, endRow, endCol): # TODO check the logic 
         
@@ -152,42 +142,63 @@ class pychess_board():
         if(self.resetEnPassant):
             self.enPassantable = [-1, -1]
         
-        
         self.resetEnPassant = True # reset next move
         
         piece = self.board[startRow][startCol]
         
-        if(piece == 6 and endRow == 7 and startRow == 7 and startCol == 4 and endCol == 7 and self.board[7][7] == 2):
-            self.__castle("white", "kingside")
-        elif(piece == -6 and endRow == 0 and startRow == 0 and startCol == 4 and endCol == 7 and self.board[0][7] == -2):
-            self.__castle("black", "kingside")
-        elif(piece == 6 and endRow == 7 and startRow == 7 and startCol == 4 and endCol == 2 and self.board[7][0] == 2):
-            self.__castle("white", "Queenside")
-        elif(piece == -6 and endRow == 0 and startRow == 0 and startCol == 4 and endCol == 2 and self.board[0][0] == -2):
-            self.__castle("black", "Queenside")
-        elif(piece > 0 and not self.__out_of_bounds(endRow + 1, endCol) and self.__is_enemy_square(piece, endRow + 1, endCol) and self.enPassantable[0] == endRow + 1 and self.enPassantable[1] == endCol):
-            self.enPassant(endRow + 1, endCol)
-        elif(piece < 0 and not self.__out_of_bounds(endRow - 1, endCol) and self.__is_enemy_square(piece, endRow - 1, endCol) and self.enPassantable[0] == endRow - 1 and self.enPassantable[1] == endCol):
-            self.enPassant(endRow - 1, endCol)
+        if(piece == 6):
+            
+            if(startCol == 4):
+                if(endCol == 7):
+                    self.__castle("white", "kingside")
+                elif(endCol == 2):
+                    self.__castle("white", "Queenside")
+            else:
+                self.canCastle[0] = False
+                self.canCastle[1] = False
+                
+        elif(piece == -6):
+            
+            if(startCol == 4):
+                if(endCol == 7):
+                    self.__castle("black", "kingside")
+                elif(endCol == 2):
+                    self.__castle("black", "Queenside")
+            else:
+                self.canCastle[2] = False
+                self.canCastle[3] = False
+                
+        elif(piece == 1):
+            
+            if(not self.__out_of_bounds(endRow + 1, endCol) and self.__is_enemy_square(piece, endRow + 1, endCol)):
+                self.__en_passant(endRow + 1, endCol)
+                
+            elif(startRow == 6 and endRow == 4):
+                self.__set_en_passant(endRow, endCol)
+            
+        elif(piece == -1):
+            
+            if(not self.__out_of_bounds(endRow - 1, endCol) and self.__is_enemy_square(piece, endRow - 1, endCol)):
+                self.__en_passant(endRow - 1, endCol)
+                
+            elif(startRow == 1 and endRow == 3):
+                self.__set_en_passant(endRow, endCol)
+                
         elif(piece == -2):
+            
             if(startRow == 7):
                 if(startCol == 0):
                     self.canCastle[1] = False
                 elif(startCol == 7):
                     self.canCastle[0] = False
-        elif(piece == 2):       
+                    
+        elif(piece == 2):
+                   
             if(startRow == 0):
                 if(startCol == 0):
-                    print("cant castle " + str(startRow) + " " + str(startCol) + " " + str(endRow) + " " + str(endCol))
                     self.canCastle[3] = False
                 elif(startCol == 7):
                     self.canCastle[2] = False
-        elif(piece == -6):
-            self.canCastle[2] = False
-            self.canCastle[3] = False
-        elif(piece == 6):
-            self.canCastle[0] = False
-            self.canCastle[1] = False
         
         
         self.board[startRow][startCol] = 0 # move piece
@@ -200,169 +211,6 @@ class pychess_board():
         return output
     
                     
-    """methods to check if moves are legal. All methods return a boolean"""
-    def __check_move(self, startRow, startCol, endRow, endCol):
-        
-        piece = self.board[startRow][startCol]
-        
-        # if incorrect turn
-        if((piece < 0) == self.white_to_move):
-            return False
-        
-        # if starting or ending squares are out of bounds
-        if(self.__out_of_bounds(startRow, startCol) or self.__out_of_bounds(endRow, endCol)):
-            return False
-        
-        
-        # if starting and ending squares are the same
-        if(startRow == endRow and startCol == endCol):
-            return False
-        
-        
-        # if ending square is occupied by friendly piece
-        if(piece*self.board[endRow][endCol] > 0):
-            return False
-        
-        
-        # if king is in danger after move is completed
-        turnComplete = self.clone().__move_piece_no_check(startRow, startCol, endRow, endCol) 
-        if(turnComplete.__king_in_danger(False)):
-            return False
-        
-
-        if(piece == 1 or piece == -1):
-            return self.__check_move_pawn(startRow, startCol, endRow, endCol)
-        elif(piece == 2 or piece == -2):
-            return self.__check_move_rook(startRow, startCol, endRow, endCol)
-        elif(piece == 3 or piece == -3):
-            return self.__check_move_knight(startRow, startCol, endRow, endCol)
-        elif(piece == 4 or piece == -4):
-            return self.__check_move_bishop(startRow, startCol, endRow, endCol)
-        elif(piece == 5 or piece == -5):
-            return self.__check_move_queen(startRow, startCol, endRow, endCol)
-        elif(piece == 6 or piece == -6):
-            return self.__check_move_king(startRow, startCol, endRow, endCol)
-        else:
-            return False
-        
-    def __check_move_bishop(self, startRow, startCol, endRow, endCol):
-        rowDiff = endRow - startRow
-        colDiff = endCol - startCol
-        
-        # if not moving diagonally
-        if(np.abs(rowDiff) != np.abs(colDiff)):
-            return False
-        
-        
-        return self.__is_empty_between(startRow, startCol, endRow, endCol)
-    
-    def __check_move_king(self, startRow, startCol, endRow, endCol):
-        rowDiff = endRow - startRow
-        colDiff = endCol - startCol
-        piece = self.board[startRow][startCol]
-        
-        if(np.abs(rowDiff) <= 1 and np.abs(colDiff) <= 1):
-            return True
-        
-        
-        # castling
-        if(not self.__king_in_danger(True) and startCol == 4 and rowDiff == 0):
-            
-            # castling kingside
-            if(endCol == 6 and self.__is_empty_between(startRow, startCol, endRow, 7) and self.__is_safe_between(startRow, startCol, endRow, 7)):
-                
-                if(piece > 0 and canCastle[0] and self.board[7][7] == 2):
-                    return True
-                elif(piece < 0 and canCastle[2] and self.board[0][7] == -2):
-                    return True
-                
-            # castling queenSide
-            elif(endCol == 2 and self.__is_empty_between(startRow, startCol, endRow, 0) and self.__is_safe_between(startRow, startCol, endRow, 0)):
-                
-                if(piece > 0 and self.canCastle[1] and self.board[7][0] == 2):
-                    return True
-                elif(piece < 0 and self.canCastle[3] and self.board[0][0] == -2):
-                    return True
-                
-            
-        
-        
-        return False
-    
-    def __check_move_knight(self, startRow, startCol, endRow, endCol):
-        rowDiff = endRow - startRow
-        colDiff = endCol - startCol
-    
-        return np.abs(rowDiff*colDiff) == 2
-    
-    def __check_move_pawn(self, startRow, startCol, endRow, endCol):
-        
-        piece = self.board[startRow][startCol]
-        rowDiff = endRow - startRow
-        colDiff = endCol - startCol
-        
-        
-        if(colDiff == 0 and self.__is_empty_square(endRow, endCol)):
-            
-            # if moving forward one square
-            if(self.__moving_forward_one(piece, rowDiff)):
-                return True
-            
-            
-            # moving forward two squares
-            if(piece < 0 and startRow == 1 and endRow == 3 and self.__is_empty_square(2, startCol) and self.__is_empty_square(3, startCol)): # black piece
-                self.__set_en_passant(endRow, endCol)
-                self.resetEnPassant = False
-                return True
-            elif(piece > 0 and startRow == 6 and endRow == 4 and self.__is_empty_square(5, endCol) and self.__is_empty_square(4, startCol)):
-                self.__set_en_passant(endRow, endCol)
-                self.resetEnPassant = False
-                return True
-            
-            
-        elif(np.abs(colDiff) == 1 and self.__moving_forward_one(piece, rowDiff)): # moving diagonally
-            
-            # if capturing diagonally forward
-            if(self.__is_enemy_square(piece, endRow, endCol)):
-                return True
-            
-            
-            # enPassanting into an enemy square is not possible
-            if(piece > 0 and self.__is_enemy_square(piece, endRow + 1, endCol) and self.enPassantable[0] == endRow + 1 and self.enPassantable[1] == endCol):
-                self.__en_passant(endRow + 1, endCol)
-                return True
-            elif(piece < 0 and self.__is_enemy_square(piece, endRow - 1, endCol) and self.enPassantable[0] == endRow - 1 and self.enPassantable[1] == endCol):
-                self.__en_passant(endRow - 1, endCol)
-                return True
-            
-        
-        return False
-    
-    def __check_move_queen(self, startRow, startCol, endRow, endCol):
-        rowDiff = endRow - startRow
-        colDiff = endCol - startCol
-        
-        # if not moving diagonally or in a straight line 
-        if(np.abs(rowDiff) != np.abs(colDiff) and rowDiff * colDiff != 0):
-            return False
-        
-        
-        return self.__is_empty_between(startRow, startCol, endRow, endCol)
-    
-    def __check_move_rook(self, startRow, startCol, endRow, endCol):
-        rowDiff = endRow - startRow
-        colDiff = endCol - startCol
-        
-        # if not moving in a straight line
-        if(rowDiff * colDiff != 0):
-            return False
-        
-        
-        if(self.__is_empty_between(startRow, startCol, endRow, endCol)):
-            return True
-        
-        return False
-    
     
     
     """methods to get all possible moves in the current position from the specified square"""
@@ -457,9 +305,7 @@ class pychess_board():
                     
                 if(self.__check_move(row, col, row + 2, col)):
                     output.append(self.__new_move(row + 2, col))
-                
-            
-        
+
         
         return output
     
@@ -507,6 +353,158 @@ class pychess_board():
             
         
         return output
+    
+    
+    
+    
+    """methods to check if moves are legal. All methods return a boolean"""
+    def __check_move(self, startRow, startCol, endRow, endCol):
+
+        piece = self.board[startRow][startCol]
+        
+        # if incorrect turn
+        if((piece < 0) == self.white_to_move):
+            return False
+        
+        # if starting or ending squares are out of bounds
+        if(self.__out_of_bounds(startRow, startCol) or self.__out_of_bounds(endRow, endCol)):
+            return False
+        
+        
+        # if starting and ending squares are the same
+        if(startRow == endRow and startCol == endCol):
+            return False
+        
+        
+        # if ending square is occupied by friendly piece
+        if(piece*self.board[endRow][endCol] > 0):
+            return False
+        
+        
+        # if king is in danger after move is completed
+        turnComplete = self.clone().__move_piece_no_check(startRow, startCol, endRow, endCol) 
+        if(turnComplete.__king_in_danger(False)):
+            return False
+        
+        if(piece == 1 or piece == -1):
+            return self.__check_move_pawn(startRow, startCol, endRow, endCol)
+        elif(piece == 2 or piece == -2):
+            return self.__check_move_rook(startRow, startCol, endRow, endCol)
+        elif(piece == 3 or piece == -3):
+            return self.__check_move_knight(startRow, startCol, endRow, endCol)
+        elif(piece == 4 or piece == -4):
+            return self.__check_move_bishop(startRow, startCol, endRow, endCol)
+        elif(piece == 5 or piece == -5):
+            return self.__check_move_queen(startRow, startCol, endRow, endCol)
+        elif(piece == 6 or piece == -6):
+            return self.__check_move_king(startRow, startCol, endRow, endCol)
+        else:
+            return False
+    
+    def __check_move_bishop(self, startRow, startCol, endRow, endCol):
+        rowDiff = endRow - startRow
+        colDiff = endCol - startCol
+        
+        # if not moving diagonally
+        if(np.abs(rowDiff) != np.abs(colDiff)):
+            return False
+        
+        
+        return self.__is_empty_between(startRow, startCol, endRow, endCol)
+    
+    def __check_move_king(self, startRow, startCol, endRow, endCol):
+        rowDiff = endRow - startRow
+        colDiff = endCol - startCol
+        piece = self.board[startRow][startCol]
+        
+        if(np.abs(rowDiff) <= 1 and np.abs(colDiff) <= 1):
+            return True
+        
+        # castling
+        if(not self.__king_in_danger(True) and startCol == 4 and rowDiff == 0):
+            
+            # castling kingside
+            if(endCol == 6 and self.__is_empty_between(startRow, startCol, endRow, 7) and self.__is_safe_between(startRow, startCol, endRow, 7)):
+                
+                if(piece > 0 and canCastle[0] and self.board[7][7] == 2):
+                    return True
+                elif(piece < 0 and canCastle[2] and self.board[0][7] == -2):
+                    return True
+                
+            # castling queenSide
+            elif(endCol == 2 and self.__is_empty_between(startRow, startCol, endRow, 0) and self.__is_safe_between(startRow, startCol, endRow, 0)):
+                
+                if(piece > 0 and self.canCastle[1] and self.board[7][0] == 2):
+                    return True
+                elif(piece < 0 and self.canCastle[3] and self.board[0][0] == -2):
+                    return True
+
+        
+        return False
+    
+    def __check_move_knight(self, startRow, startCol, endRow, endCol):
+        rowDiff = endRow - startRow
+        colDiff = endCol - startCol
+    
+        return np.abs(rowDiff*colDiff) == 2
+    
+    def __check_move_pawn(self, startRow, startCol, endRow, endCol):
+        
+        piece = self.board[startRow][startCol]
+        rowDiff = endRow - startRow
+        colDiff = endCol - startCol
+        
+        
+        if(colDiff == 0 and self.__is_empty_square(endRow, endCol)):
+            
+            # if moving forward one square
+            if(self.__moving_forward_one(piece, rowDiff)):
+                return True
+            
+            # moving forward two squares
+            if(piece < 0 and startRow == 1 and endRow == 3 and self.__is_empty_square(2, startCol) and self.__is_empty_square(3, startCol)): # black piece
+                return True
+            elif(piece > 0 and startRow == 6 and endRow == 4 and self.__is_empty_square(5, endCol) and self.__is_empty_square(4, startCol)):
+                return True
+            
+        elif(np.abs(colDiff) == 1 and self.__moving_forward_one(piece, rowDiff)): # moving diagonally
+            # if capturing diagonally forward
+            if(self.__is_enemy_square(piece, endRow, endCol)):
+                return True
+            # enPassanting into an enemy square is not possible
+            elif(piece > 0 and self.__is_enemy_square(piece, endRow + 1, endCol) and self.enPassantable[0] == endRow + 1 and self.enPassantable[1] == endCol):
+                return True
+            elif(piece < 0 and self.__is_enemy_square(piece, endRow - 1, endCol) and self.enPassantable[0] == endRow - 1 and self.enPassantable[1] == endCol):
+                return True
+            
+        
+        return False
+    
+    def __check_move_queen(self, startRow, startCol, endRow, endCol):
+        rowDiff = endRow - startRow
+        colDiff = endCol - startCol
+        
+        # if not moving diagonally or in a straight line 
+        if(np.abs(rowDiff) != np.abs(colDiff) and rowDiff * colDiff != 0):
+            return False
+        
+        
+        return self.__is_empty_between(startRow, startCol, endRow, endCol)
+    
+    def __check_move_rook(self, startRow, startCol, endRow, endCol):
+        rowDiff = endRow - startRow
+        colDiff = endCol - startCol
+        
+        # if not moving in a straight line
+        if(rowDiff * colDiff != 0):
+            return False
+        
+        
+        if(self.__is_empty_between(startRow, startCol, endRow, endCol)):
+            return True
+        
+        return False
+    
     
     
     
@@ -771,6 +769,7 @@ class pychess_board():
     
     
     
+    
     """        misc. methods to help with tasks        """
     def __moving_forward_one(self, piece, rowDiff):
         return (rowDiff * piece < 0 and np.abs(rowDiff) == 1)
@@ -807,8 +806,11 @@ class pychess_board():
         self.board[row][col] = 0
     
     def __set_en_passant(self, row, col):
-        self.enPassantable[0] = row
-        self.enPassantable[1] = col
+        temp = []
+        temp.append(row)
+        temp.append(col)
+        self.enPassantable = temp
+        self.resetEnPassant = False
     
     def __new_move(self, row, col):
         output = []
@@ -816,7 +818,7 @@ class pychess_board():
         output.append(col)
         return output
    
-    def __check__game_complete(self):
+    def __check_game_complete(self):
         if(len(self.get_possible_moves()) == 0):
             self.__end_game()
             
