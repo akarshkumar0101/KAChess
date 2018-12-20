@@ -26,7 +26,8 @@ class pychess_board():
      
     
     self.board
-    self.canEnPassant #:row, col, resetNextTurn if no row/col, set to -1. reset on 1, don't on 0
+    self.enPassantable #:row, col -- if no row/col, set to -1. reset on 1, don't on 0
+    self.resetEnPassant -- enPassantable register to be reset next turn
     self.whiteToMove
     self.canCastle #: [whiteKingside, whiteQueenside, blackKingside, blackQueenside] boolean array
     """
@@ -41,7 +42,8 @@ class pychess_board():
         
         self.whiteToMove = white_to_move
         
-        self.canEnPassant = [-1, -1, 0]
+        self.enPassantable = [-1, -1]
+        self.resetEnPassant = 0
         self.canCastle = [True, True, True, True]
         
     
@@ -250,9 +252,10 @@ class pychess_board():
         
         output.whiteToMove = self.whiteToMove
         
-        for i in range(3):
-            output.canEnPassant[i] = self.canEnPassant[i]
+        for i in range(2):
+            output.enPassantable[i] = self.enPassantable[i]
         
+        output.resetEnPassant = self.resetEnPassant
         
         output.copyBoard(self)
         
@@ -294,10 +297,10 @@ class pychess_board():
     # methods # # # # # # # # # # # # # # # # # 
     
     def castle(self, color, dir):
-        if(color.equals("white")):
+        if(color == "white"):
             self.canCastle[0] = False
             self.canCastle[1] = False
-            if(dir.equals("kingside")):
+            if(dir == "kingside"):
                 self.board[7][7] = 0
                 self.board[7][5] = 2
             else:
@@ -307,7 +310,7 @@ class pychess_board():
         else:
             self.canCastle[2] = False
             self.canCastle[3] = False
-            if(dir.equals("kingside")):
+            if(dir == "kingside"):
                 self.board[0][7] = 0
                 self.board[0][5] = -2
             else:
@@ -319,27 +322,27 @@ class pychess_board():
     
     def movePiece(self, startRow, startCol, endRow, endCol): # TODO check movePiece
         
-        # reset enPassant if reset flag is set
-        if(self.canEnPassant[2] != 0):
-            self.canEnPassant = getNewEnPassant()
+        # reset enPassantable if reset flag is set
+        if(self.resetEnPassant):
+            self.enPassantable = [-1, -1]
         
         
-        self.canEnPassant[2] = 1 # reset next move
+        self.resetEnPassant = True # reset next move
         
         piece = self.board[startRow][startCol]
         
         if(piece == 6 and endRow == 7 and startRow == 7 and startCol == 4 and endCol == 7 and self.board[7][7] == 2):
-            castle("white", "kingside")
+            self.castle("white", "kingside")
         elif(piece == -6 and endRow == 0 and startRow == 0 and startCol == 4 and endCol == 7 and self.board[0][7] == -2):
-            castle("black", "kingside")
+            self.castle("black", "kingside")
         elif(piece == 6 and endRow == 7 and startRow == 7 and startCol == 4 and endCol == 2 and self.board[7][0] == 2):
-            castle("white", "Queenside")
+            self.castle("white", "Queenside")
         elif(piece == -6 and endRow == 0 and startRow == 0 and startCol == 4 and endCol == 2 and self.board[0][0] == -2):
-            castle("black", "Queenside")
-        elif(piece > 0 and not self.outOfBounds(endRow + 1, endCol) and self.isEnemySquare(piece, endRow + 1, endCol) and self.canEnPassant[0] == endRow + 1 and self.canEnPassant[1] == endCol):
-            enPassant(endRow + 1, endCol)
-        elif(piece < 0 and not self.outOfBounds(endRow - 1, endCol) and self.isEnemySquare(piece, endRow - 1, endCol) and self.canEnPassant[0] == endRow - 1 and self.canEnPassant[1] == endCol):
-            enPassant(endRow - 1, endCol)
+            self.castle("black", "Queenside")
+        elif(piece > 0 and not self.outOfBounds(endRow + 1, endCol) and self.isEnemySquare(piece, endRow + 1, endCol) and self.enPassantable[0] == endRow + 1 and self.enPassantable[1] == endCol):
+            self.enPassantable(endRow + 1, endCol)
+        elif(piece < 0 and not self.outOfBounds(endRow - 1, endCol) and self.isEnemySquare(piece, endRow - 1, endCol) and self.enPassantable[0] == endRow - 1 and self.enPassantable[1] == endCol):
+            self.enPassantable(endRow - 1, endCol)
         
         
         
@@ -357,9 +360,8 @@ class pychess_board():
         piece = self.board[startRow][startCol]
         
         # if incorrect turn
-        if(piece < 0 == self.whiteToMove):
+        if((piece < 0) == self.whiteToMove):
             return False
-        
         
         # if starting or ending squares are out of bounds
         if(self.outOfBounds(startRow, startCol) or self.outOfBounds(endRow, endCol)):
@@ -439,13 +441,13 @@ class pychess_board():
                 
             # castling queenSide
             elif(endCol == 2 and self.isEmptyBetween(startRow, startCol, endRow, 0) and self.isSafeBetween(startRow, startCol, endRow, 0)):
-                if(piece > 0 and canCastle[1] and self.board[7][0] == 2):
-                    canCastle[2] = False
-                    canCastle[3] = False
+                if(piece > 0 and self.canCastle[1] and self.board[7][0] == 2):
+                    self.canCastle[2] = False
+                    self.canCastle[3] = False
                     return True
-                elif(piece < 0 and canCastle[3] and self.board[0][0] == -2):
-                    canCastle[2] = False
-                    canCastle[3] = False
+                elif(piece < 0 and self.canCastle[3] and self.board[0][0] == -2):
+                    self.canCastle[2] = False
+                    self.canCastle[3] = False
                     return True
                 
             
@@ -475,10 +477,12 @@ class pychess_board():
             
             # moving forward two squares
             if(piece < 0 and startRow == 1 and endRow == 3 and self.isEmptySquare(2, startCol) and self.isEmptySquare(3, startCol)): # black piece
-                self.setEnPassant(endRow, endCol, 0)
+                self.setEnPassant(endRow, endCol)
+                self.resetEnPassant = False
                 return True
             elif(piece > 0 and startRow == 6 and endRow == 4 and self.isEmptySquare(5, endCol) and self.isEmptySquare(4, startCol)):
-                self.setEnPassant(endRow, endCol, 0)
+                self.setEnPassant(endRow, endCol)
+                self.resetEnPassant = False
                 return True
             
             
@@ -490,10 +494,10 @@ class pychess_board():
             
             
             # enPassanting into an enemy square is not possible
-            if(piece > 0 and self.isEnemySquare(piece, endRow + 1, endCol) and self.canEnPassant[0] == endRow + 1 and self.canEnPassant[1] == endCol):
+            if(piece > 0 and self.isEnemySquare(piece, endRow + 1, endCol) and self.enPassantable[0] == endRow + 1 and self.enPassantable[1] == endCol):
                 self.enPassant(endRow + 1, endCol)
                 return True
-            elif(piece < 0 and self.isEnemySquare(piece, endRow - 1, endCol) and self.canEnPassant[0] == endRow - 1 and self.canEnPassant[1] == endCol):
+            elif(piece < 0 and self.isEnemySquare(piece, endRow - 1, endCol) and self.enPassantable[0] == endRow - 1 and self.enPassantable[1] == endCol):
                 self.enPassant(endRow - 1, endCol)
                 return True
             
@@ -523,15 +527,15 @@ class pychess_board():
         if(self.isEmptyBetween(startRow, startCol, endRow, endCol)):
             if(startRow == 7):
                 if(startCol == 0):
-                    canCastle[1] = False
+                    self.canCastle[1] = False
                 elif(startCol == 7):
-                    canCastle[0] = False
+                    self.canCastle[0] = False
                 
             elif(startRow == 0):
                 if(startCol == 0):
-                    canCastle[3] = False
+                    self.canCastle[3] = False
                 elif(startCol == 7):
-                    canCastle[2] = False
+                    self.canCastle[2] = False
                 
             
             return True
@@ -740,10 +744,10 @@ class pychess_board():
         
         # ensure that startCol <= endCol and startRow <= endRow (problem is symmetric, so self is valid)
         if(colDiff < 0):
-            return isSafeBetween(startRow, endCol, endRow, startCol)
+            return self.isSafeBetween(startRow, endCol, endRow, startCol)
         
         if(rowDiff < 0):
-            return isSafeBetween(endRow, startCol, startRow, endCol)
+            return self.isSafeBetween(endRow, startCol, startRow, endCol)
         
         
         copy = self.clone()
@@ -760,9 +764,9 @@ class pychess_board():
                 tempTurn = not tempTurn
             
         elif(rowDiff == 0):
-            for col in range(startCol+1, endcol):
+            for col in range(startCol+1, endCol):
                 copy = copy.movePieceNoCheck(startRow, col - 1, startRow, col)
-                if(kingInDanger(copy, tempTurn)):
+                if(copy.kingInDanger(tempTurn)):
                     return False
                 
                 tempTurn = not tempTurn
@@ -770,7 +774,7 @@ class pychess_board():
         elif(colDiff == 0):
             for row in range(startRow+1, endRow):
                 copy = copy.movePieceNoCheck(row - 1, startCol, row, startCol)
-                if(kingInDanger(copy, tempTurn)):
+                if(copy.kingInDanger(tempTurn)):
                     return False
                 
                 tempTurn = not tempTurn
@@ -795,8 +799,7 @@ class pychess_board():
             for col in range(8):
                 self.board[row][col] = chessboard_to_copy.board[row][col]
     
-    def setEnPassant(self, row, col, reset):
-        self.canEnPassant[0] = row
-        self.canEnPassant[1] = col
-        self.canEnPassant[2] = reset
+    def setEnPassant(self, row, col):
+        self.enPassantable[0] = row
+        self.enPassantable[1] = col
     

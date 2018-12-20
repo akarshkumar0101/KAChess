@@ -101,6 +101,7 @@ class pychess_board_test(unittest.TestCase):
         for i in range(8):
             for j in range(8):
                 cb.move(0, 1, i, j)
+                print(str(i) + " " + str(j))
                 self.assertBoardsEqual(cb, pychess_board())
                 cb.move(0, 6, i, j)
                 self.assertBoardsEqual(cb, pychess_board())

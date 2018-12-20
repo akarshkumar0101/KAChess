@@ -1,3 +1,4 @@
+from pychess_board import pychess_board
 
 class pychess_board_engine:
     
@@ -19,9 +20,19 @@ class pychess_board_engine:
      * King is infinity pts
      """
     
+    def assertBoardsEqual(self, a, b):
+        boardA = a.getBoard()
+        boardB = b.getBoard()
+        
+        for i in range(len(boardA)):
+            for j in range(len(boardA[0])):
+                self.assertEqual(boardA[i][j], boardB[i][j])
+        
+
+    
     # makes a new engine with userPlayingWhite specifying whether the user is playing white
     def __init__(self, board_setup = None, white_to_move = True, user_plays_white = True):
-        self.pychess_board_board = pychess_board(self, board_setup, to_move)
+        self.pychess_board_board = pychess_board(board_setup, white_to_move)
         self.userPlaysWhite = user_plays_white
         self.engineToMove = not user_plays_white
     
@@ -62,5 +73,12 @@ class pychess_board_engine:
             nextMove = getBestMove(2000)
             self.pychess_board.move(nextMove[0], nextMove[1], nextMove[2], nextMove[3])
         
-    
+    def main(self):
+        cb = pychess_board()
+        # black knights not supposed to move on first turn
+        cb.move(0, 1, 2, 0)
+        print(cb.toString())
 
+if(__name__ == "__main__"):
+    py = pychess_board_engine()
+    py.main()
