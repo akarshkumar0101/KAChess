@@ -21,8 +21,8 @@ class pychess_board_engine:
      """
     
     def assertBoardsEqual(self, a, b):
-        boardA = a.getBoard()
-        boardB = b.getBoard()
+        boardA = a.get_board()
+        boardB = b.get_board()
         
         for i in range(len(boardA)):
             for j in range(len(boardA[0])):
@@ -74,10 +74,15 @@ class pychess_board_engine:
             self.pychess_board.move(nextMove[0], nextMove[1], nextMove[2], nextMove[3])
         
     def main(self):
-        cb = pychess_board()
-        # black knights not supposed to move on first turn
-        cb.move(0, 1, 2, 0)
-        print(cb.toString())
+        pass
+
+    def move_no_check(self, startRow, startCol, endRow, endCol, b):
+        output = b.get_board()
+        piece = output[startRow][startCol]
+        output[startRow][startCol] = 0
+        output[endRow][endCol] = piece
+        return pychess_board(output, True)
+    
 
 if(__name__ == "__main__"):
     py = pychess_board_engine()

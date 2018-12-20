@@ -4,16 +4,7 @@ from pychess_board import pychess_board
 
 class pychess_board_test(unittest.TestCase):
 
-    def assertBoardsEqual(self, a, b):
-        boardA = a.getBoard()
-        boardB = b.getBoard()
-        
-        for i in range(len(boardA)):
-            for j in range(len(boardA[0])):
-                self.assertEqual(boardA[i][j], boardB[i][j])
-        
-
-    def test_Rook_Movement_In_Starting_Position(self):
+    def test_rook_movement_in_starting_position(self):
         cb = pychess_board()
         
         # top right rook
@@ -29,7 +20,7 @@ class pychess_board_test(unittest.TestCase):
                 self.assertBoardsEqual(cb, pychess_board())
         
     
-    def test_Bishop_Movement_In_Starting_Position(self):
+    def test_bishop_movement_in_starting_position(self):
         cb = pychess_board()
         
         # bottom left bishop
@@ -45,7 +36,7 @@ class pychess_board_test(unittest.TestCase):
                 self.assertBoardsEqual(cb, pychess_board())
 
     
-    def test_King_Movement_In_Starting_Position(self):
+    def test_king_movement_in_starting_position(self):
         cb = pychess_board()
 
         for i in range(8):
@@ -56,7 +47,7 @@ class pychess_board_test(unittest.TestCase):
                 self.assertBoardsEqual(cb, pychess_board())
         
     
-    def test_Queen_Movement_In_Starting_Position(self):
+    def test_queen_movement_in_starting_position(self):
         cb = pychess_board()
         
         # black queen
@@ -68,7 +59,7 @@ class pychess_board_test(unittest.TestCase):
                 self.assertBoardsEqual(cb, pychess_board())
             
     
-    def test_Pawn_Movement_In_Starting_Position(self):
+    def test_pawn_movement_in_starting_position(self):
         
         cb = pychess_board()
 
@@ -93,7 +84,7 @@ class pychess_board_test(unittest.TestCase):
                         self.assertBoardsEqual(cb, pychess_board())
                     
     
-    def test_Knight_Movement_In_Starting_Position(self):
+    def test_knight_movement_in_starting_position(self):
         
         cb = pychess_board()
         
@@ -101,7 +92,6 @@ class pychess_board_test(unittest.TestCase):
         for i in range(8):
             for j in range(8):
                 cb.move(0, 1, i, j)
-                print(str(i) + " " + str(j))
                 self.assertBoardsEqual(cb, pychess_board())
                 cb.move(0, 6, i, j)
                 self.assertBoardsEqual(cb, pychess_board())
@@ -141,7 +131,7 @@ class pychess_board_test(unittest.TestCase):
     
     # FIXME make sure follows real game moves
     
-    def test_Simple_Game_1(self):
+    def test_simple_game_1(self):
         cb = pychess_board()
         tester = pychess_board()
         
@@ -169,9 +159,7 @@ class pychess_board_test(unittest.TestCase):
         tester = self.move_no_check(3, 4, 4, 3, tester)
         self.assertBoardsEqual(cb, tester)
     
-    
-    
-    def test_Simple_Game_2(self):
+    def test_simple_game_2(self):
         cb = pychess_board()
         tester = pychess_board()
         
@@ -297,7 +285,7 @@ class pychess_board_test(unittest.TestCase):
         tester = self.move_no_check(0,4,0,2, tester)
         tester = self.move_no_check(0,0,0,3, tester)
         self.assertBoardsEqual(cb, tester)
-        
+        """
         # 0-0-0
         cb.move(7,4,7,2)
         tester = self.move_no_check(7,4,7,2, tester)
@@ -384,22 +372,56 @@ class pychess_board_test(unittest.TestCase):
         tester = self.move_no_check(3,4,2,5, tester)
         tester = self.move_no_check(3,4,3,5, tester) # fill 3,5, with empty square
         self.assertBoardsEqual(cb, tester)
-        
     
+    """
     
     # moves piece on for easy testing
+    
+    def test_simple_game_3(self):
+        cb = pychess_board()
+        tester = pychess_board()
+        
+        cb.move(6, 4, 4 ,4)
+        tester = self.move_no_check(6, 4, 4, 4, tester)
+        self.assertBoardsEqual(cb, tester)
+        
+        cb.move(1, 4, 3 ,4)
+        tester = self.move_no_check(1, 4, 3 ,4, tester)
+        self.assertBoardsEqual(cb, tester)
+        
+        cb.move(7, 6, 5 ,5)
+        tester = self.move_no_check(7, 6, 5 ,5, tester)
+        self.assertBoardsEqual(cb, tester)
+        
+        cb.move(1, 1, 3, 1)
+        tester = self.move_no_check(1, 1, 3, 1, tester)
+        self.assertBoardsEqual(cb, tester)
+        
+        cb.move(5, 5, 4 ,3)
+        tester = self.move_no_check(5, 5, 4 ,3, tester)
+        self.assertBoardsEqual(cb, tester)
+        
+        cb.move(3, 4, 4, 3)
+        tester = self.move_no_check(3, 4, 4, 3, tester)
+        self.assertBoardsEqual(cb, tester)
+    
+    
+    
+    """                         helper methods                         """
     def move_no_check(self, startRow, startCol, endRow, endCol, b):
-        output = b.getBoard()
+        output = b.get_board()
         piece = output[startRow][startCol]
         output[startRow][startCol] = 0
         output[endRow][endCol] = piece
         return pychess_board(output, True)
     
+    def assertBoardsEqual(self, a, b):
+        # given: board dimensions are equal
+        # test whether boards are equal
+        boardA = a.get_board()
+        boardB = b.get_board()
+        
+        for i in range(len(boardA)):
+            for j in range(len(boardA[0])):
+                self.assertEqual(boardA[i][j], boardB[i][j])
     
-    # given: board dimensions are equal
-    # test whether boards are equal
-
-
-    
-if __name__ == '__main__':
-    unittest.main()
