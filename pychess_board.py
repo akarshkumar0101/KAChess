@@ -31,6 +31,8 @@ class pychess_board():
     self.resetEnPassant -- enPassantable register to be reset next turn
     self.white_to_move
     self.canCastle #: [whiteKingside, whiteQueenside, blackKingside, blackQueenside] boolean array
+    self.game_has_ended --> true only if the current game has ended
+    self.game_ending_message --> describes game ending
     """
     
     
@@ -52,6 +54,8 @@ class pychess_board():
         self.enPassantable = [-1, -1]
         self.resetEnPassant = 0
         self.canCastle = [True, True, True, True]
+        self.game_has_ended = False
+        self.game_ending_message = ""
         
         
     """                                               """
@@ -63,13 +67,13 @@ class pychess_board():
     def move(self, startRow, startCol, endRow, endCol): # returns int[][] of current board position
         
         # if valid move
-        if(self.__check_move(startRow, startCol, endRow, endCol)):
+        if((not self.game_has_ended) and self.__check_move(startRow, startCol, endRow, endCol)):
             self.__move_piece(startRow, startCol, endRow, endCol)
             return True
         
         return False
     
-    def king_in_danger(self, currentTurn):
+    def king_in_danger(self, currentTurn = True):
         # if currentTurn is True, returns if the king is in danger for player whose turn it is
         # if currentTurn is False, returns if the king is in danger for player whose turn it is not
         sign = 0
@@ -320,6 +324,17 @@ class pychess_board():
         self.board[startRow][startCol] = 0 # move piece
         self.board[endRow][endCol] = piece
         self.white_to_move = not self.white_to_move
+        
+        if(len(self.get_possible_moves()) == 0): # TODO optimize this by only checking if a certain piece has a move
+            self.game_has_ended = True
+            if(self.king_in_danger()):
+                self.game_ending_message = "Checkmate. "
+                if(self.white_to_move):
+                    self.game_ending_message += "Black has won!"
+                else:
+                    self.game_ending_message += "White has won!"
+            else:
+                self.game_ending_message = "Stalemate!"
     
     def __move_piece_no_check(self, startRow, startCol, endRow, endCol): # returns a new pychess_board object with the piece moved regardless if it is a legal move
         output = self.clone() # clone is redundant but for safety
