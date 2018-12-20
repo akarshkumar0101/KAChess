@@ -370,7 +370,7 @@ class pychess_board():
         if(self.__out_of_bounds(startRow, startCol) or self.__out_of_bounds(endRow, endCol)):
             return False
         
-        
+
         # if starting and ending squares are the same
         if(startRow == endRow and startCol == endCol):
             return False
@@ -382,7 +382,7 @@ class pychess_board():
         
         
         # if king is in danger after move is completed
-        turnComplete = self.clone().__move_piece_no_check(startRow, startCol, endRow, endCol) 
+        turnComplete = self.clone().__move_piece_no_check(startRow, startCol, endRow, endCol)
         if(turnComplete.__king_in_danger(False)):
             return False
         
@@ -636,16 +636,15 @@ class pychess_board():
             return False
         
         
+        
+        
         # check enemy knights
-        for row in range(-2, 3, 1):
-            for col in range(-2, 3, 1):
+        for row in range(-2, 3):
+            for col in range(-2, 3):
                 if(not self.__out_of_bounds(kingRow + row, kingCol + col) and np.abs(row*col) == 2):
                     if(self.board[kingRow + row][kingCol + col] == sign * -3):
                         return True
                     
-                
-            
-        
         
         # check for danger by enemy king
         for row in range(-1, 2):
@@ -653,31 +652,27 @@ class pychess_board():
                 if(not self.__out_of_bounds(kingRow + row, kingCol + col)):
                     if(self.board[kingRow + row][kingCol + col] == sign * -6):
                         return True
-                    
-                
-            
         
         
         # check up and down
-        for row in range(1, 7):
+        for row in range(1, 8):
             if(not self.__out_of_bounds(kingRow + row, kingCol)):
                 tempPiece =  self.board[kingRow + row][kingCol]
                 if(tempPiece == sign * -5 or tempPiece == sign * -2):
                     return True
-                elif(tempPiece * sign > 0):
+                elif(tempPiece * sign != 0): # piece blocking
                     break
                 
             else:
                 break
             
         
-        
-        for row in range(1, 7):
+        for row in range(1, 8):
             if(not self.__out_of_bounds(kingRow - row, kingCol)):
                 tempPiece =  self.board[kingRow - row][kingCol]
                 if(tempPiece == sign * -5 or tempPiece == sign * -2):
                     return True
-                elif(tempPiece * sign > 0):
+                elif(tempPiece * sign != 0):
                     break
                 
             else:
@@ -686,12 +681,12 @@ class pychess_board():
         
         
         # check left and right
-        for col in range(1, 7):
+        for col in range(1, 8):
             if(not self.__out_of_bounds(kingRow, kingCol + col)):
                 tempPiece =  self.board[kingRow][kingCol + col]
                 if(tempPiece == sign * -5 or tempPiece == sign * -2):
                     return True
-                elif(tempPiece * sign > 0):
+                elif(tempPiece * sign != 0):
                     break
                 
             else:
@@ -699,12 +694,12 @@ class pychess_board():
             
         
         
-        for col in range(1, 7):
+        for col in range(1, 8):
             if(not self.__out_of_bounds(kingRow, kingCol - col)):
                 tempPiece =  self.board[kingRow][kingCol - col]
                 if(tempPiece == sign * -5 or tempPiece == sign * -2):
                     return True
-                elif(tempPiece * sign > 0):
+                elif(tempPiece * sign != 0):
                     break
                 
             else:
@@ -713,12 +708,12 @@ class pychess_board():
         
         
         # check down-right
-        for i in range(1, 7):
+        for i in range(1, 8):
             if(not self.__out_of_bounds(kingRow + i, kingCol + i)):
                 tempPiece =  self.board[kingRow + i][kingCol + i]
                 if(tempPiece == sign * -5 or tempPiece == sign * -2):
                     return True
-                elif(tempPiece * sign > 0):
+                elif(tempPiece * sign != 0):
                     break
                 
             else:
@@ -726,12 +721,12 @@ class pychess_board():
             
         
         # check up-left
-        for i in range(1, 7):
+        for i in range(1, 8):
             if(not self.__out_of_bounds(kingRow - i, kingCol - i)):
                 tempPiece =  self.board[kingRow - i][kingCol - i]
                 if(tempPiece == sign * -5 or tempPiece == sign * -2):
                     return True
-                elif(tempPiece * sign > 0):
+                elif(tempPiece * sign != 0):
                     break
                 
             else:
@@ -739,12 +734,12 @@ class pychess_board():
             
         
         # check down-left
-        for i in range(1, 7):
+        for i in range(1, 8):
             if(not self.__out_of_bounds(kingRow + i, kingCol - i)):
                 tempPiece =  self.board[kingRow + i][kingCol - i]
                 if(tempPiece == sign * -5 or tempPiece == sign * -2):
                     return True
-                elif(tempPiece * sign > 0):
+                elif(tempPiece * sign != 0):
                     break
                 
             else:
@@ -752,12 +747,12 @@ class pychess_board():
             
         
         # check up-right
-        for i in range(1, 7):
+        for i in range(1, 8):
             if(not self.__out_of_bounds(kingRow - i, kingCol + i)):
                 tempPiece =  self.board[kingRow - i][kingCol + i]
                 if(tempPiece == sign * -5 or tempPiece == sign * -2):
                     return True
-                elif(tempPiece * sign > 0):
+                elif(tempPiece * sign != 0):
                     break
                 
             else:

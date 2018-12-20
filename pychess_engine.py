@@ -76,215 +76,49 @@ class pychess_board_engine:
     def main(self):
         cb = pychess_board()
         tester = pychess_board()
+        cb, tester = self.Test_move(cb, tester, "c2,c4")
+        cb, tester = self.Test_move(cb, tester, "b7,b6")
+        cb, tester = self.Test_move(cb, tester, "d2,d3")
+        cb, tester = self.Test_move(cb, tester, "c8,a6")
+        cb, tester = self.Test_move(cb, tester, "b2,b4")
+        cb, tester = self.Test_move(cb, tester, "b8,c6")
+        cb, tester = self.Test_move(cb, tester, "b4,b5")
+        cb, tester = self.Test_move(cb, tester, "a6,b5")
+        cb, tester = self.Test_move(cb, tester, "c4,b5")
+        cb, tester = self.Test_move(cb, tester, "c6,d4")
+        cb, tester = self.Test_move(cb, tester, "e2,e3")
         
-        # uses en passant
+        cb, tester = self.Test_move(cb, tester, "d4,b5")
+        cb, tester = self.Test_move(cb, tester, "b1,c3")
+        cb, tester = self.Test_move(cb, tester, "e7,e6")
+        cb, tester = self.Test_move(cb, tester, "c3,b5")
+        cb, tester = self.Test_move(cb, tester, "a7,a6")
+        cb, tester = self.Test_move(cb, tester, "b5,c7")
+        cb, tester = self.Test_move(cb, tester, "d8,c7")
+        cb, tester = self.Test_move(cb, tester, "a2,a4")
         
-        # e4
-        cb.move(self.new_move(6, 4, 4 ,4))
-        tester = self.move_no_check(6, 4, 4, 4, tester)
+        cb, tester = self.Test_move(cb, tester, "f8,b4")
+        cb, tester = self.Test_move(cb, tester, "c1,d2")
+        cb, tester = self.Test_move(cb, tester, "b4,c5")
+        cb, tester = self.Test_move(cb, tester, "g1,f3")
+        cb, tester = self.Test_move(cb, tester, "g8,f6")
+        cb, tester = self.Test_move(cb, tester, "f3,e5")
+        cb, tester = self.Test_move(cb, tester, "c7,e5")
+        cb, tester = self.Test_move(cb, tester, "e3,e4")
+        cb, tester = self.Test_move(cb, tester, "e5,d4")
+        cb, tester = self.Test_move(cb, tester, "d1,g4")
+        
+        cb, tester = self.Test_move(cb, tester, "f6,g4")
+        cb, tester = self.Test_move(cb, tester, "g2,g3")
+        cb, tester = self.Test_move(cb, tester, "d4,f2")
+        cb, tester = self.Test_move(cb, tester, "e1,d1")
+        cb, tester = self.Test_move(cb, tester, "f2,f3")
+        cb, tester = self.Test_move(cb, tester, "d1,c2")
+        cb, tester = self.Test_move(cb, tester, "f3,h1")
+        cb, tester = self.Test_move(cb, tester, "d2,g5")
+        cb, tester = self.Test_move(cb, tester, "a8,c8")
         print(cb.to_string())
-        
-        # e5
-        cb.move(self.new_move(1, 4, 3 ,4))
-        tester = self.move_no_check(1, 4, 3 ,4, tester)
-        print(cb.to_string())
-        
-        # Nf3
-        cb.move(self.new_move(7, 6, 5 ,5))
-        tester = self.move_no_check(7, 6, 5 ,5, tester)
-        print(cb.to_string())
-        
-        # Nc6
-        cb.move(self.new_move(0, 1, 2, 2))
-        tester = self.move_no_check(0, 1, 2, 2, tester)
-        print(cb.to_string())
-        
-        # d4
-        cb.move(self.new_move(6, 3, 4 ,3))
-        tester = self.move_no_check(6, 3, 4 ,3, tester)
-        print(cb.to_string())
-        
-        # exd4
-        cb.move(self.new_move(3, 4, 4, 3))
-        tester = self.move_no_check(3, 4, 4, 3, tester)
-        print(cb.to_string())
-        
-        # Nxd4
-        cb.move(self.new_move(5 ,5, 4, 3))
-        tester = self.move_no_check(5 ,5, 4, 3, tester)
-        print(cb.to_string())
-        
-        # Nf6
-        cb.move(self.new_move(0, 6, 2, 5))
-        tester = self.move_no_check(0, 6, 2, 5, tester)
-        print(cb.to_string())
-        
-        # Nxc6
-        cb.move(self.new_move(4, 3, 2, 2))
-        tester = self.move_no_check(4, 3, 2, 2, tester)
-        print(cb.to_string())
-        
-        # bxc6
-        cb.move(self.new_move(1,1,2,2))
-        tester = self.move_no_check(1,1,2,2, tester)
-        print(cb.to_string())
-        
-        # e5
-        cb.move(self.new_move(4,4,3,4))
-        tester = self.move_no_check(4,4,3,4, tester)
-        print(cb.to_string())
-        
-        # Qe7
-        cb.move(self.new_move(0,3,1,4))
-        tester = self.move_no_check(0,3,1,4, tester)
-        print(cb.to_string())
-        
-        # Qe2
-        cb.move(self.new_move(7,3,6,4))
-        tester = self.move_no_check(7,3,6,4, tester)
-        print(cb.to_string())
-        
-        # Nd5
-        cb.move(self.new_move(2,5,3,3))
-        tester = self.move_no_check(2,5,3,3, tester)
-        print(cb.to_string())
-        
-        # c4
-        cb.move(self.new_move(6,2,4,2))
-        tester = self.move_no_check(6,2,4,2, tester)
-        print(cb.to_string())
-        
-        # Nb6
-        cb.move(self.new_move(3,3,2,1))
-        tester = self.move_no_check(3,3,2,1, tester)
-        print(cb.to_string())
-        
-        # Nc3
-        cb.move(self.new_move(7,1,5,2))
-        tester = self.move_no_check(7,1,5,2, tester)
-        print(cb.to_string())
-        
-        # Qe6
-        cb.move(self.new_move(1,4,2,4))
-        tester = self.move_no_check(1,4,2,4, tester)
-        print(cb.to_string())
-        
-        # Qe4
-        cb.move(self.new_move(6,4,4,4))
-        tester = self.move_no_check(6,4,4,4, tester)
-        print(cb.to_string())
-        
-        # Bb4
-        cb.move(self.new_move(0,5,4,1))
-        tester = self.move_no_check(0,5,4,1, tester)
-        print(cb.to_string())
-        
-        # Bd2
-        cb.move(self.new_move(7,2,6,3))
-        tester = self.move_no_check(7,2,6,3, tester)
-        print(cb.to_string())
-        
-        # Bb7
-        cb.move(self.new_move(0,2,1,1))
-        tester = self.move_no_check(0,2,1,1, tester)
-        print(cb.to_string())
-        
-        # Bd3
-        cb.move(self.new_move(7,5,5,3))
-        tester = self.move_no_check(7,5,5,3, tester)
-        print(cb.to_string())
-        
-        # 0-0-0
-        cb.move(self.new_move(0,4,0,2))
-        tester = self.move_no_check(0,4,0,2, tester)
-        tester = self.move_no_check(0,0,0,3, tester)
-        print(cb.to_string())
-        
-        # 0-0-0
-        cb.move(self.new_move(7,4,7,2))
-        tester = self.move_no_check(7,4,7,2, tester)
-        tester = self.move_no_check(7,0,7,3, tester)
-        print(cb.to_string())
-        
-        # c5
-        cb.move(self.new_move(2,2,3,2))
-        tester = self.move_no_check(2,2,3,2, tester)
-        print(cb.to_string())
-        
-        # Qe2
-        cb.move(self.new_move(4,4,6,4))
-        tester = self.move_no_check(4,4,6,4, tester)
-        print(cb.to_string())
-        
-        # Re8
-        cb.move(self.new_move(0,7,0,4))
-        tester = self.move_no_check(0,7,0,4, tester)
-        print(cb.to_string())
-        
-        # f4
-        cb.move(self.new_move(6,5,4,5))
-        tester = self.move_no_check(6,5,4,5, tester)
-        print(cb.to_string())
-        
-        # d6
-        cb.move(self.new_move(1,3,2,3))
-        tester = self.move_no_check(1,3,2,3, tester)
-        print(cb.to_string())
-        
-        # a3
-        cb.move(self.new_move(6,0,5,0))
-        tester = self.move_no_check(6,0,5,0, tester)
-        print(cb.to_string())
-        
-        # Bxc3
-        cb.move(self.new_move(4,1,5,2))
-        tester = self.move_no_check(4,1,5,2, tester)
-        print(cb.to_string())
-        
-        # Bxc3
-        cb.move(self.new_move(6,3,5,2))
-        tester = self.move_no_check(6,3,5,2, tester)
-        print(cb.to_string())
-        
-        # g6
-        cb.move(self.new_move(1,6,2,6))
-        tester = self.move_no_check(1,6,2,6, tester)
-        print(cb.to_string())
-        
-        # Rhf1
-        cb.move(self.new_move(7,7,7,5))
-        tester = self.move_no_check(7,7,7,5, tester)
-        print(cb.to_string())
-        
-        # Na4
-        cb.move(self.new_move(2,1,4,0))
-        tester = self.move_no_check(2,1,4,0, tester)
-        print(cb.to_string())
-        
-        # Ba5
-        cb.move(self.new_move(5,2,3,0))
-        tester = self.move_no_check(5,2,3,0, tester)
-        print(cb.to_string())
-        
-        # dxe5
-        cb.move(self.new_move(2,3,3,4))
-        tester = self.move_no_check(2,3,3,4, tester)
-        print(cb.to_string())
-        
-        # fxe5
-        cb.move(self.new_move(4,5,3,4))
-        tester = self.move_no_check(4,5,3,4, tester)
-        print(cb.to_string())
-        
-        # f5
-        cb.move(self.new_move(1,5,3,5))
-        tester = self.move_no_check(1,5,3,5, tester)
-        print(cb.to_string())
-        
-        # exf6!
-        cb.move(self.new_move(3,4,2,5))
-        tester = self.move_no_check(3,4,2,5, tester)
-        tester = self.move_no_check(3,4,3,5, tester) # fill 3,5, with empty square
+        cb, tester = self.Test_move(cb, tester, "a1,b1")
         print(cb.to_string())
         
     def move_no_check(self, startRow, startCol, endRow, endCol, b):
@@ -302,6 +136,40 @@ class pychess_board_engine:
         output.append(endCol)
         return output
     
+    def Test_move(self, chess_board, tester_board, move): # startsqr, comma, endsqr ex: d2,d4
+        
+        squares = move.split(",")
+        
+        startRow = self.num_to_square(squares[0][1])
+        startCol = self.letter_to_square(squares[0][0])
+        endRow = self.num_to_square(squares[1][1])
+        endCol = self.letter_to_square(squares[1][0])
+        
+        chess_board.move(self.new_move(startRow,startCol,endRow,endCol))
+        tester_board = self.move_no_check(startRow,startCol,endRow,endCol, tester_board)
+        return chess_board, tester_board
+     
+    def num_to_square(self, num):
+        return 8 - int(num)
+       
+    def letter_to_square(self, letter):
+        if(letter == "a"):
+            return 0
+        elif(letter == "b"):
+            return 1
+        elif(letter == "c"):
+            return 2
+        elif(letter == "d"):
+            return 3
+        elif(letter == "e"):
+            return 4
+        elif(letter == "f"):
+            return 5
+        elif(letter == "g"):
+            return 6
+        elif(letter == "h"):
+            return 7
+        
    
 if(__name__ == "__main__"):
     py = pychess_board_engine()

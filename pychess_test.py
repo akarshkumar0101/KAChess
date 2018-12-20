@@ -376,10 +376,76 @@ class pychess_board_test(unittest.TestCase):
     # moves piece on for easy testing
     
     def test_simple_game_3(self):
-        pass # TODO implement
+        cb = pychess_board()
+        tester = pychess_board()
+        
+        cb, tester = self.Test_move(cb, tester, "c2,c4")
+        cb, tester = self.Test_move(cb, tester, "b7,b6")
+        cb, tester = self.Test_move(cb, tester, "d2,d3")
+        cb, tester = self.Test_move(cb, tester, "c8,a6")
+        cb, tester = self.Test_move(cb, tester, "b2,b4")
+        cb, tester = self.Test_move(cb, tester, "b8,c6")
+        cb, tester = self.Test_move(cb, tester, "b4,b5")
+        cb, tester = self.Test_move(cb, tester, "a6,b5")
+        cb, tester = self.Test_move(cb, tester, "c4,b5")
+        cb, tester = self.Test_move(cb, tester, "c6,d4")
+        cb, tester = self.Test_move(cb, tester, "e2,e3")
+        
+        cb, tester = self.Test_move(cb, tester, "d4,b5")
+        cb, tester = self.Test_move(cb, tester, "b1,c3")
+        cb, tester = self.Test_move(cb, tester, "e7,e6")
+        cb, tester = self.Test_move(cb, tester, "c3,b5")
+        cb, tester = self.Test_move(cb, tester, "a7,a6")
+        cb, tester = self.Test_move(cb, tester, "b5,c7")
+        cb, tester = self.Test_move(cb, tester, "d8,c7")
+        cb, tester = self.Test_move(cb, tester, "a2,a4")
+        
+        cb, tester = self.Test_move(cb, tester, "f8,b4")
+        cb, tester = self.Test_move(cb, tester, "c1,d2")
+        cb, tester = self.Test_move(cb, tester, "b4,c5")
+        cb, tester = self.Test_move(cb, tester, "g1,f3")
+        cb, tester = self.Test_move(cb, tester, "g8,f6")
+        cb, tester = self.Test_move(cb, tester, "f3,e5")
+        cb, tester = self.Test_move(cb, tester, "c7,e5")
+        cb, tester = self.Test_move(cb, tester, "e3,e4")
+        cb, tester = self.Test_move(cb, tester, "e5,d4")
+        cb, tester = self.Test_move(cb, tester, "d1,g4")
+        
+        cb, tester = self.Test_move(cb, tester, "f6,g4")
+        cb, tester = self.Test_move(cb, tester, "g2,g3")
+        cb, tester = self.Test_move(cb, tester, "d4,f2")
+        cb, tester = self.Test_move(cb, tester, "e1,d1")
+        cb, tester = self.Test_move(cb, tester, "f2,f3")
+        cb, tester = self.Test_move(cb, tester, "d1,c2")
+        cb, tester = self.Test_move(cb, tester, "f3,h1")
+        cb, tester = self.Test_move(cb, tester, "d2,g5")
+        cb, tester = self.Test_move(cb, tester, "a8,c8")
+
+        cb, tester = self.Test_move(cb, tester, "a1,b1")
+        cb, tester = self.Test_move(cb, tester, "h1,h2")
+        cb, tester = self.Test_move(cb, tester, "f1,g2")
+        cb, tester = self.Test_move(cb, tester, "h2,g2")
+        cb, tester = self.Test_move(cb, tester, "c2,c3")
+        cb, tester = self.Test_move(cb, tester, "c5,e3")
+        
+    def test_simple_game_4(self):
+        cb = pychess_board()
+        tester = pychess_board()
+        
+        cb, tester = self.Test_move(cb, tester, "c2,c4")
     
     
+    
+    
+    """                                                                """
+    """                                                                """
+    """                                                                """
     """                         helper methods                         """
+    """                                                                """
+    """                                                                """
+    """                                                                """
+    """                                                                """
+    
     def move_no_check(self, startRow, startCol, endRow, endCol, b):
         output = b.get_board()
         piece = output[startRow][startCol]
@@ -404,3 +470,73 @@ class pychess_board_test(unittest.TestCase):
         output.append(endRow)
         output.append(endCol)
         return output
+    
+    def Test_move(self, chess_board, tester_board, move): # startsqr, comma, endsqr ex: d2,d4
+        # can't be used for compound moves
+        squares = move.split(",")
+        
+        startRow = self.num_to_square(squares[0][1])
+        startCol = self.letter_to_square(squares[0][0])
+        endRow = self.num_to_square(squares[1][1])
+        endCol = self.letter_to_square(squares[1][0])
+        
+        piece = chess_board.board[startRow][startCol]
+        
+        # before the move
+        if(piece > 0):
+            self.move_black(chess_board, tester_board)
+        elif(piece < 0):
+            self.move_white(chess_board, tester_board)
+        
+        # move the piece
+        chess_board.move(self.new_move(startRow,startCol,endRow,endCol))
+        tester_board = self.move_no_check(startRow,startCol,endRow,endCol, tester_board)
+        self.assertBoardsEqual(chess_board, tester_board)
+        
+        # after the move
+        if(piece < 0):
+            self.move_black(chess_board, tester_board)
+        elif(piece > 0):
+            self.move_white(chess_board, tester_board)
+        
+        
+        return chess_board, tester_board
+     
+    def num_to_square(self, num):
+        return 8 - int(num)
+       
+    def letter_to_square(self, letter):
+        if(letter == "a"):
+            return 0
+        elif(letter == "b"):
+            return 1
+        elif(letter == "c"):
+            return 2
+        elif(letter == "d"):
+            return 3
+        elif(letter == "e"):
+            return 4
+        elif(letter == "f"):
+            return 5
+        elif(letter == "g"):
+            return 6
+        elif(letter == "h"):
+            return 7
+    
+    def move_white(self, cb, tester): # try to move every piece of white (doesn't move)
+        for startRow in range(8):
+            for startCol in range(8):
+                if(tester.board[startRow][startCol] > 0):
+                    for endRow in range(8):
+                        for endCol in range(8):
+                            cb.move(self.new_move(startRow,startCol,endRow,endCol))
+                            self.assertBoardsEqual(cb, tester)
+    
+    def move_black(self, cb, tester): # try to move every piece of black (doesn't move)
+        for startRow in range(8):
+            for startCol in range(8):
+                if(tester.board[startRow][startCol] < 0):
+                    for endRow in range(8):
+                        for endCol in range(8):
+                            cb.move(self.new_move(startRow,startCol,endRow,endCol))
+                            self.assertBoardsEqual(cb, tester)
