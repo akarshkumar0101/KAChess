@@ -74,52 +74,11 @@ class pychess_board_engine:
             self.pychess_board.move(nextMove[0], nextMove[1], nextMove[2], nextMove[3])
         
     def main(self):
-        cb = pychess_board()
-        tester = pychess_board()
-        cb, tester = self.Test_move(cb, tester, "c2,c4")
-        cb, tester = self.Test_move(cb, tester, "b7,b6")
-        cb, tester = self.Test_move(cb, tester, "d2,d3")
-        cb, tester = self.Test_move(cb, tester, "c8,a6")
-        cb, tester = self.Test_move(cb, tester, "b2,b4")
-        cb, tester = self.Test_move(cb, tester, "b8,c6")
-        cb, tester = self.Test_move(cb, tester, "b4,b5")
-        cb, tester = self.Test_move(cb, tester, "a6,b5")
-        cb, tester = self.Test_move(cb, tester, "c4,b5")
-        cb, tester = self.Test_move(cb, tester, "c6,d4")
-        cb, tester = self.Test_move(cb, tester, "e2,e3")
-        
-        cb, tester = self.Test_move(cb, tester, "d4,b5")
-        cb, tester = self.Test_move(cb, tester, "b1,c3")
-        cb, tester = self.Test_move(cb, tester, "e7,e6")
-        cb, tester = self.Test_move(cb, tester, "c3,b5")
-        cb, tester = self.Test_move(cb, tester, "a7,a6")
-        cb, tester = self.Test_move(cb, tester, "b5,c7")
-        cb, tester = self.Test_move(cb, tester, "d8,c7")
-        cb, tester = self.Test_move(cb, tester, "a2,a4")
-        
-        cb, tester = self.Test_move(cb, tester, "f8,b4")
-        cb, tester = self.Test_move(cb, tester, "c1,d2")
-        cb, tester = self.Test_move(cb, tester, "b4,c5")
-        cb, tester = self.Test_move(cb, tester, "g1,f3")
-        cb, tester = self.Test_move(cb, tester, "g8,f6")
-        cb, tester = self.Test_move(cb, tester, "f3,e5")
-        cb, tester = self.Test_move(cb, tester, "c7,e5")
-        cb, tester = self.Test_move(cb, tester, "e3,e4")
-        cb, tester = self.Test_move(cb, tester, "e5,d4")
-        cb, tester = self.Test_move(cb, tester, "d1,g4")
-        
-        cb, tester = self.Test_move(cb, tester, "f6,g4")
-        cb, tester = self.Test_move(cb, tester, "g2,g3")
-        cb, tester = self.Test_move(cb, tester, "d4,f2")
-        cb, tester = self.Test_move(cb, tester, "e1,d1")
-        cb, tester = self.Test_move(cb, tester, "f2,f3")
-        cb, tester = self.Test_move(cb, tester, "d1,c2")
-        cb, tester = self.Test_move(cb, tester, "f3,h1")
-        cb, tester = self.Test_move(cb, tester, "d2,g5")
-        cb, tester = self.Test_move(cb, tester, "a8,c8")
-        print(cb.to_string())
-        cb, tester = self.Test_move(cb, tester, "a1,b1")
-        print(cb.to_string())
+        board_setup = [[0,0,0,0,0,-5,0,0],[0,0,0,0,0,0,0,0],[-2,0,0,0,0,0,0,0],[0,0,0,6,0,0,0,0],[-2,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]]
+        cb = pychess_board(board_setup)
+        tester = pychess_board(board_setup)
+        cb, tester = self.Test_move(cb, tester, self.new_move(3,3,3,4))
+    
         
     def move_no_check(self, startRow, startCol, endRow, endCol, b):
         output = b.get_board()
@@ -137,16 +96,11 @@ class pychess_board_engine:
         return output
     
     def Test_move(self, chess_board, tester_board, move): # startsqr, comma, endsqr ex: d2,d4
-        
-        squares = move.split(",")
-        
-        startRow = self.num_to_square(squares[0][1])
-        startCol = self.letter_to_square(squares[0][0])
-        endRow = self.num_to_square(squares[1][1])
-        endCol = self.letter_to_square(squares[1][0])
+        startRow, startCol, endRow, endCol = self.parse(move)
         
         chess_board.move(self.new_move(startRow,startCol,endRow,endCol))
         tester_board = self.move_no_check(startRow,startCol,endRow,endCol, tester_board)
+        print(chess_board.to_string())
         return chess_board, tester_board
      
     def num_to_square(self, num):
@@ -169,7 +123,25 @@ class pychess_board_engine:
             return 6
         elif(letter == "h"):
             return 7
+    
+    
+    def parse(self, move):
+        if(len(move) == 4): # move is a list
+            startRow = move[0]
+            startCol = move[1]
+            endRow   = move[2]
+            endCol   = move[3] 
+        else: # move is a string
+            # can't be used for compound moves
+            squares = move.split(",")
+            
+            startRow = self.num_to_square(squares[0][1])
+            startCol = self.letter_to_square(squares[0][0])
+            endRow = self.num_to_square(squares[1][1])
+            endCol = self.letter_to_square(squares[1][0])
         
+        return startRow, startCol, endRow, endCol
+    
    
 if(__name__ == "__main__"):
     py = pychess_board_engine()

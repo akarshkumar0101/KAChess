@@ -1,9 +1,15 @@
 import unittest
 from pychess_board import pychess_board
+from numpy.f2py.auxfuncs import throw_error
 
 
 class pychess_board_test(unittest.TestCase):
-
+    
+    """                                                                """
+    """                                                                """
+    """                    starting position tests                      """
+    """                                                                """
+    """                                                                """
     def test_rook_movement_in_starting_position(self):
         cb = pychess_board()
         
@@ -129,8 +135,13 @@ class pychess_board_test(unittest.TestCase):
     
     # TODO test get moves
     
-    # FIXME make sure follows real game moves
     
+    
+    """                                                                """
+    """                                                                """
+    """                            game tests                          """
+    """                                                                """
+    """                                                                """
     def test_simple_game_1(self):
         cb = pychess_board()
         tester = pychess_board()
@@ -158,6 +169,7 @@ class pychess_board_test(unittest.TestCase):
         cb.move(self.new_move(3, 4, 4, 3))
         tester = self.move_no_check(3, 4, 4, 3, tester)
         self.assertBoardsEqual(cb, tester)
+    
     
     def test_simple_game_2(self):
         cb = pychess_board()
@@ -370,10 +382,11 @@ class pychess_board_test(unittest.TestCase):
         # exf6!
         cb.move(self.new_move(3,4,2,5))
         tester = self.move_no_check(3,4,2,5, tester)
-        tester = self.move_no_check(3,4,3,5, tester) # fill 3,5, with empty square
+        tester = self.erase_square(3,5, tester) # fill 3,5, with empty square
         self.assertBoardsEqual(cb, tester)
     
     # moves piece on for easy testing
+    
     
     def test_simple_game_3(self):
         cb = pychess_board()
@@ -428,11 +441,121 @@ class pychess_board_test(unittest.TestCase):
         cb, tester = self.Test_move(cb, tester, "c2,c3")
         cb, tester = self.Test_move(cb, tester, "c5,e3")
         
+        
     def test_simple_game_4(self):
         cb = pychess_board()
         tester = pychess_board()
         
         cb, tester = self.Test_move(cb, tester, "c2,c4")
+    
+    
+    
+    
+    """                                                                """
+    """                                                                """
+    """                        king safety tests                       """
+    """                                                                """
+    """                                                                """
+    def test_king_safety_1(self):
+        """
+             ________________________________________________
+            |     |     |     |     |     |     |     |     |
+            |     |     | -2  |     | -2  |     |     |     |
+            |_____|_____|_____|_____|_____|_____|_____|_____|
+            |     |     |     |     |     |     |     |     |
+            |     |     |     |     |     |     |     |     |
+            |_____|_____|_____|_____|_____|_____|_____|_____|
+            |     |     |     |     |     |     |     |     |
+            | -2  |     |     |     |     |     |     |     |
+            |_____|_____|_____|_____|_____|_____|_____|_____|
+            |     |     |     |     |     |     |     |     |
+            |     |     |     |  6  |     |     |     |     |
+            |_____|_____|_____|_____|_____|_____|_____|_____|
+            |     |     |     |     |     |     |     |     |
+            | -2  |     |     |     |     |     |     |     |
+            |_____|_____|_____|_____|_____|_____|_____|_____|
+            |     |     |     |     |     |     |     |     |
+            |     |     |     |     |     |     |     |     |
+            |_____|_____|_____|_____|_____|_____|_____|_____|
+            |     |     |     |     |     |     |     |     |
+            |     |     |     |     |     |     |     |     |
+            |_____|_____|_____|_____|_____|_____|_____|_____|
+            |     |     |     |     |     |     |     |     |
+            |     |     |     |     |     |     |     |     |
+            |_____|_____|_____|_____|_____|_____|_____|_____|
+
+        """
+        
+        board_setup = [[0,0,-2,0,-2,0,0,0],[0,0,0,0,0,0,0,0],[-2,0,0,0,0,0,0,0],[0,0,0,6,0,0,0,0],[-2,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]]
+        cb = pychess_board(board_setup)
+        tester = pychess_board(board_setup)
+
+        for i in range(8):
+            for j in range(8):
+                self.Test_false_move(cb, tester, self.new_move(3,3,i,j))
+        
+    
+    def test_king_safety_2(self):
+        """
+             ________________________________________________
+            |     |     |     |     |     |     |     |     |
+            |     |     |     |     |     | -5  |     |     |
+            |_____|_____|_____|_____|_____|_____|_____|_____|
+            |     |     |     |     |     |     |     |     |
+            |     |     |     |     |     |     |     |     |
+            |_____|_____|_____|_____|_____|_____|_____|_____|
+            |     |     |     |     |     |     |     |     |
+            | -2  |     |     |     |     |     |     |     |
+            |_____|_____|_____|_____|_____|_____|_____|_____|
+            |     |     |     |     |     |     |     |     |
+            |     |     |     |  6  |     |     |     |     |
+            |_____|_____|_____|_____|_____|_____|_____|_____|
+            |     |     |     |     |     |     |     |     |
+            | -2  |     |     |     |     |     |     |     |
+            |_____|_____|_____|_____|_____|_____|_____|_____|
+            |     |     |     |     |     |     |     |     |
+            |     |     |     |     |     |     |     |     |
+            |_____|_____|_____|_____|_____|_____|_____|_____|
+            |     |     |     |     |     |     |     |     |
+            |     |     |     |     |     |     |     |     |
+            |_____|_____|_____|_____|_____|_____|_____|_____|
+            |     |     |     |     |     |     |     |     |
+            |     |     |     |     |     |     |     |     |
+            |_____|_____|_____|_____|_____|_____|_____|_____|
+
+        """
+        
+        board_setup = [[0,0,0,0,0,-5,0,0],[0,0,0,0,0,0,0,0],[-2,0,0,0,0,0,0,0],[0,0,0,6,0,0,0,0],[-2,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]]
+        cb = pychess_board(board_setup)
+        tester = pychess_board(board_setup)
+
+        for i in range(8):
+            for j in range(8):
+                if(i != 3 or j != 4):
+                    self.Test_false_move(cb, tester, self.new_move(3,3,i,j))
+        cb, tester = self.Test_move(cb, tester, self.new_move(3,3,3,4))
+        cb, tester = self.Test_move(cb, tester, self.new_move(4,0,4,1)) # so correct turn
+        
+        for i in range(8):
+            for j in range(8):
+                if(i != 3 or j != 3):
+                    self.Test_false_move(cb, tester, self.new_move(3,4,i,j))
+                
+        
+        cb, tester = self.Test_move(cb, tester, self.new_move(3,4,3,3))
+        
+        
+    def test_king_safety_3(self):
+        pass
+    
+    
+    def test_king_safety_4(self):
+        pass
+    
+    
+    def test_king_safety_5(self):
+        pass
+    
     
     
     
@@ -446,12 +569,22 @@ class pychess_board_test(unittest.TestCase):
     """                                                                """
     """                                                                """
     
+    def erase_square(self, row, col, cboard):
+        cboard.board[row][col] = 0
+        return cboard
+    
+    
     def move_no_check(self, startRow, startCol, endRow, endCol, b):
         output = b.get_board()
         piece = output[startRow][startCol]
+        if(piece == 0):
+            print("cannot move empty square: row " + str(startRow) + ", col "+str(startCol) )
+            print(b.to_string())
+            raise ArgumentError
         output[startRow][startCol] = 0
         output[endRow][endCol] = piece
-        return pychess_board(output, True)
+        return pychess_board(output, not b.white_to_move)
+    
     
     def assertBoardsEqual(self, a, b):
         # given: board dimensions are equal
@@ -461,7 +594,16 @@ class pychess_board_test(unittest.TestCase):
         
         for i in range(len(boardA)):
             for j in range(len(boardA[0])):
-                self.assertEqual(boardA[i][j], boardB[i][j])
+                try:
+                    self.assertEqual(boardA[i][j], boardB[i][j])
+                except:
+                    print("Assertion error at row " + str(i)+", column "+str(j)+":")
+                    print("chessboard:")
+                    print(a.to_string())
+                    print("tester board:")
+                    print(b.to_string())
+                    raise AssertionError
+                    
     
     def new_move(self, startRow, startCol, endRow, endCol):
         output = []
@@ -471,14 +613,10 @@ class pychess_board_test(unittest.TestCase):
         output.append(endCol)
         return output
     
+    
     def Test_move(self, chess_board, tester_board, move): # startsqr, comma, endsqr ex: d2,d4
-        # can't be used for compound moves
-        squares = move.split(",")
         
-        startRow = self.num_to_square(squares[0][1])
-        startCol = self.letter_to_square(squares[0][0])
-        endRow = self.num_to_square(squares[1][1])
-        endCol = self.letter_to_square(squares[1][0])
+        startRow, startCol, endRow, endCol = self.parse(move)
         
         piece = chess_board.board[startRow][startCol]
         
@@ -489,21 +627,24 @@ class pychess_board_test(unittest.TestCase):
             self.move_white(chess_board, tester_board)
         
         # move the piece
+        # move is changing tester_board too
         chess_board.move(self.new_move(startRow,startCol,endRow,endCol))
         tester_board = self.move_no_check(startRow,startCol,endRow,endCol, tester_board)
         self.assertBoardsEqual(chess_board, tester_board)
         
-        # after the move
-        if(piece < 0):
-            self.move_black(chess_board, tester_board)
-        elif(piece > 0):
-            self.move_white(chess_board, tester_board)
-        
-        
         return chess_board, tester_board
+     
+     
+    def Test_false_move(self, chess_board, tester_board, move):
+        # move the piece
+        startRow,startCol,endRow,endCol = self.parse(move)
+        chess_board.move(self.new_move(startRow,startCol,endRow,endCol))
+        self.assertBoardsEqual(chess_board, tester_board)
+        
      
     def num_to_square(self, num):
         return 8 - int(num)
+       
        
     def letter_to_square(self, letter):
         if(letter == "a"):
@@ -523,6 +664,25 @@ class pychess_board_test(unittest.TestCase):
         elif(letter == "h"):
             return 7
     
+    
+    def parse(self, move):
+        if(isinstance(move, list)): # move is a list
+            startRow = move[0]
+            startCol = move[1]
+            endRow   = move[2]
+            endCol   = move[3] 
+        elif(isinstance(move, str)): # move is a string
+            # can't be used for compound moves
+            squares = move.split(",")
+            
+            startRow = self.num_to_square(squares[0][1])
+            startCol = self.letter_to_square(squares[0][0])
+            endRow = self.num_to_square(squares[1][1])
+            endCol = self.letter_to_square(squares[1][0])
+        
+        return startRow, startCol, endRow, endCol
+    
+    
     def move_white(self, cb, tester): # try to move every piece of white (doesn't move)
         for startRow in range(8):
             for startCol in range(8):
@@ -531,6 +691,7 @@ class pychess_board_test(unittest.TestCase):
                         for endCol in range(8):
                             cb.move(self.new_move(startRow,startCol,endRow,endCol))
                             self.assertBoardsEqual(cb, tester)
+    
     
     def move_black(self, cb, tester): # try to move every piece of black (doesn't move)
         for startRow in range(8):

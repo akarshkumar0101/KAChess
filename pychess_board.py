@@ -37,6 +37,8 @@ class pychess_board():
     """
     
     
+    
+    
     """                                               """
     """                                               """
     """                CONSTRUCTOR METHODS            """
@@ -48,8 +50,12 @@ class pychess_board():
         if(board_setup == None):
             self.board = [[-2, -3, -4, -5, -6, -4, -3, -2],[-1, -1, -1, -1, -1, -1, -1, -1],[ 0,  0,  0,  0,  0,  0,  0,  0],[ 0,  0,  0,  0,  0,  0,  0,  0],[ 0,  0,  0,  0,  0,  0,  0,  0],[ 0,  0,  0,  0,  0,  0,  0,  0],[ 1,  1,  1,  1,  1,  1,  1,  1],[ 2,  3,  4,  5,  6,  4,  3,  2]]
         else:
-            self.board = board_setup
-        
+            temp_board = []
+            for i in range(8):
+                temp_board.append(board_setup[i][:])
+
+            self.board = temp_board
+            
         self.white_to_move = white_to_move
         
         self.enPassantable = [-1, -1]
@@ -58,6 +64,9 @@ class pychess_board():
         self.game_complete = False
         self.game_complete_message = ""
         self.draw_is_offered = False
+        
+        
+        
         
     """                                               """
     """                                               """
@@ -74,6 +83,7 @@ class pychess_board():
          
         return output
      
+     
     def move(self, move): # move is list of form [startRow, startCol, endRow, endCol]
         # returns true if move is completed
         startRow = move[0]
@@ -89,11 +99,18 @@ class pychess_board():
         
         return False
     
-    def get_board(self): 
-        return copy.deepcopy(self.board)
+    
+    def get_board(self):
+        output = []
+        for i in range(8):
+            output.append(self.board[i][:])
+            
+        return output
+    
     
     def clone(self):
         return copy.deepcopy(self)
+    
     
     def to_string(self):
         output = "________________________________________________\n"
@@ -116,12 +133,15 @@ class pychess_board():
         
         return output
     
+    
     def offer_draw(self):
         self.draw_is_offered = True
+        
         
     def accept_draw(self):
         if(self.draw_is_offered):
             game_complete()
+        
         
     def resign(self):
         self.game_complete()
