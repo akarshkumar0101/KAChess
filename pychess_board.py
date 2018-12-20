@@ -5,34 +5,34 @@ class pychess_board():
     
     """                     NOTES                     """
     """                      """                      """
-     * positive is white
-     * negative is black
-     * 
-     * 1 -- pawn
-     * 2 -- rook
-     * 3 -- knight
-     * 4 -- bishop
-     * 5 -- queen
-     * 6 -- king
-     * 0 -- empty square
-     * 
-     *::-2, -3, -4, -5, -6, -4, -3, -2
-     *    :-1, -1, -1, -1, -1, -1, -1, -1
-     *    : 0,  0,  0,  0,  0,  0,  0,  0
-     *    : 0,  0,  0,  0,  0,  0,  0,  0
-     *    : 0,  0,  0,  0,  0,  0,  0,  0
-     *    : 0,  0,  0,  0,  0,  0,  0,  0
-     *    : 1,  1,  1,  1,  1,  1,  1,  1
-     * : 2,  3,  4,  5,  6,  4,  3,  2
-     
-    
-    self.board
-    self.enPassantable #:row, col -- if no row/col, set to -1. reset on 1, don't on 0
-    self.resetEnPassant -- enPassantable register to be reset next turn
-    self.white_to_move
-    self.canCastle #: [whiteKingside, whiteQueenside, blackKingside, blackQueenside] boolean array
-    self.game_has_ended --> true only if the current game has ended
-    self.game_ending_message --> describes game ending
+        positive is white
+        negative is black
+        
+        1 -- pawn
+        2 -- rook
+        3 -- knight
+        4 -- bishop
+        5 -- queen
+        6 -- king
+        0 -- empty square
+        
+        [[-2, -3, -4, -5, -6, -4, -3, -2],
+         [-1, -1, -1, -1, -1, -1, -1, -1],
+         [ 0,  0,  0,  0,  0,  0,  0,  0],
+         [ 0,  0,  0,  0,  0,  0,  0,  0],
+         [ 0,  0,  0,  0,  0,  0,  0,  0],
+         [ 0,  0,  0,  0,  0,  0,  0,  0],
+         [ 1,  1,  1,  1,  1,  1,  1,  1],
+         [ 2,  3,  4,  5,  6,  4,  3,  2]]
+         
+        
+        self.board
+        self.enPassantable #:row, col -- if no row/col, set to -1. reset on 1, don't on 0
+        self.resetEnPassant -- enPassantable register to be reset next turn
+        self.white_to_move
+        self.canCastle #: [whiteKingside, whiteQueenside, blackKingside, blackQueenside] boolean array
+        self.game_has_ended --> true only if the current game has ended
+        self.game_ending_message --> describes game ending
     """
     
     
@@ -69,7 +69,7 @@ class pychess_board():
         # if valid move
         if((not self.game_complete) and self.__check_move(startRow, startCol, endRow, endCol)):
             self.__move_piece(startRow, startCol, endRow, endCol)
-            self.check_game_complete()
+            self.__check_game_complete()
             return True
         
         return False
@@ -264,7 +264,7 @@ class pychess_board():
         
         output.resetEnPassant = self.resetEnPassant
         
-        output.copy_board(self)
+        output.board = self.get_board()
         
         return output
     
@@ -277,11 +277,6 @@ class pychess_board():
          
         return output
         
-    def copy_board(self, chessboard_to_copy):
-        for row in range(8):
-            for col in range(8):
-                self.board[row][col] = chessboard_to_copy.board[row][col]
-    
     def get_board(self): 
         return self.board[:]
     
@@ -290,10 +285,10 @@ class pychess_board():
         
     def accept_draw(self):
         if(self.draw_is_offered):
-            game_complete("draw")
+            game_complete()
         
     def resign(self):
-        self.game_complete("resign")
+        self.game_complete()
         
         
     """                                               """
@@ -815,9 +810,13 @@ class pychess_board():
         output.append(col)
         return output
    
-    def check_game_complete(self):
-        if(len(self.get_possible_moves()) == 0): # TODO optimize this by only checking if a certain piece has a move
-            self.game_complete = True
+    def __check__game_complete(self):
+        if(len(self.get_possible_moves()) == 0):
+            self.__game_complete()
+            
+    def __game_complete(self):
+        self.game_complete = True
+        if(len(self.get_possible_moves()) == 0):
             if(self.king_in_danger()):
                 self.game_ending_message = "Checkmate. "
                 if(self.white_to_move):
@@ -826,4 +825,10 @@ class pychess_board():
                     self.game_ending_message += "White has won!"
             else:
                 self.game_ending_message = "Stalemate!"
-    
+        elif(self.draw_is_offered):
+            self.game_ending_message = "It is a draw."
+        else:
+            if(self.white_to_move):
+                self.game_ending_message = "White has resigned. Black wins!"
+            else:
+                self.game_ending_message = "Black has resigned. White wins!"
