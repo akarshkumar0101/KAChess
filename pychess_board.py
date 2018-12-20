@@ -49,6 +49,7 @@ class pychess_board():
     # methods # # # # # # # # # # # # # # # # # 
     # returns int[][] of current board position
     
+<<<<<<< HEAD
     def outOfBounds(self, row, col):
         # makes sure a is a valid row or column
         return (row < 0 or row > 7 or col < 0 or col > 7)
@@ -57,6 +58,9 @@ class pychess_board():
         return self.board[:]
     
     def kingInDanger(self, currentTurn):
+=======
+    def kingInDanger(self,currentTurn):
+>>>>>>> branch 'master' of https://github.com/akarshkumar0101/KAChess
         # if currentTurn is True, returns if the king is in danger for player whose turn it is
         # if currentTurn is False, returns if the king is in danger for player whose turn it is not
         sign = 0
@@ -215,6 +219,12 @@ class pychess_board():
         
         return False 
     
+<<<<<<< HEAD
+=======
+    def kingInDanger(pychess_board, currentTurn):
+        return pychess_board.kingInDanger(currentTurn) # returns True if king is in danger on board b for specified turn
+    
+>>>>>>> branch 'master' of https://github.com/akarshkumar0101/KAChess
     def move(self, startRow, startCol, endRow, endCol):
         
         # if valid move
@@ -285,7 +295,11 @@ class pychess_board():
             return []
     
     ## returns a list of all possible moves. each move is a list [current_row, current_col, end_row, end_col]
+<<<<<<< HEAD
     def getAllMoves(self, CurrentTurn=True):
+=======
+    def getAllMoves(self, CurrentTurn):
+>>>>>>> branch 'master' of https://github.com/akarshkumar0101/KAChess
         # TODO implement
         # TODO change get moves method to return array list of arrays
         # of the form:startRow, startCol, endRow, endCol
@@ -315,7 +329,11 @@ class pychess_board():
                 self.board[0][3] = -2
     
     def enPassant(self, row, col):
+<<<<<<< HEAD
         self.board[row][col] = 0
+=======
+        board[row][col] = 0
+>>>>>>> branch 'master' of https://github.com/akarshkumar0101/KAChess
     
     def movePiece(self, startRow, startCol, endRow, endCol): # TODO check movePiece
         
@@ -397,6 +415,10 @@ class pychess_board():
         else:
             return False
         
+<<<<<<< HEAD
+=======
+    
+>>>>>>> branch 'master' of https://github.com/akarshkumar0101/KAChess
     def checkMoveBishop(self, startRow, startCol, endRow, endCol):
         rowDiff = endRow - startRow
         colDiff = endCol - startCol
@@ -779,13 +801,26 @@ class pychess_board():
         
         return True
     
+<<<<<<< HEAD
     def movingForwardOne(self, piece, rowDiff):
         return (rowDiff * piece < 0 and np.abs(rowDiff) == 1)
+=======
+    def outOfBounds(self, row, col):
+        # makes sure a is a valid row or column
+        return (row < 0 or row > 7 or col < 0 or col > 7)
+    
+    def movingForwardOne(self, piece, rowDiff):
+        return (rowDiff * piece < 0 and Math.abs(rowDiff) == 1)
+>>>>>>> branch 'master' of https://github.com/akarshkumar0101/KAChess
     
     
     # copies the board from pychess_board object to current pychess_board object
+<<<<<<< HEAD
     
     def copyBoard(self, chessboard_to_copy):
+=======
+    def copyBoard(self, board_to_copy):
+>>>>>>> branch 'master' of https://github.com/akarshkumar0101/KAChess
         for row in range(8):
             for col in range(8):
                 self.board[row][col] = chessboard_to_copy.board[row][col]
