@@ -30,40 +30,19 @@ class pychess_board_test(unittest.TestCase):
         
     
     def test_Bishop_Movement_In_Starting_Position(self):
-<<<<<<< HEAD
         cb = pychess_board()
-=======
-        cb = pychess_board
->>>>>>> branch 'master' of https://github.com/akarshkumar0101/KAChess
         
         # bottom left bishop
         for i in range(8):
             for j in range(8):
-<<<<<<< HEAD
                 cb.move(7, 2, i, j)
                 self.assertBoardsEqual(cb, pychess_board())
-=======
-                cb.move(cb, 7, 2, i, j)
-                assertBoardsEqual(cb, pychess_board())
->>>>>>> branch 'master' of https://github.com/akarshkumar0101/KAChess
                 cb.move(0, 2, i, j)
-<<<<<<< HEAD
                 self.assertBoardsEqual(cb, pychess_board())
-=======
-                assertBoardsEqual(cb, pychess_board())
->>>>>>> branch 'master' of https://github.com/akarshkumar0101/KAChess
                 cb.move(0, 5, i, j)
-<<<<<<< HEAD
                 self.assertBoardsEqual(cb, pychess_board())
-=======
-                assertBoardsEqual(cb, pychess_board())
->>>>>>> branch 'master' of https://github.com/akarshkumar0101/KAChess
                 cb.move(7, 5, i, j)
-<<<<<<< HEAD
                 self.assertBoardsEqual(cb, pychess_board())
-=======
-                assertBoardsEqual(cb, pychess_board())
->>>>>>> branch 'master' of https://github.com/akarshkumar0101/KAChess
 
     
     def test_King_Movement_In_Starting_Position(self):
@@ -72,17 +51,9 @@ class pychess_board_test(unittest.TestCase):
         for i in range(8):
             for j in range(8):
                 cb.move(7, 4, i, j)
-<<<<<<< HEAD
                 self.assertBoardsEqual(cb, pychess_board())
-=======
-                assertBoardsEqual(cb, pychess_board())
->>>>>>> branch 'master' of https://github.com/akarshkumar0101/KAChess
                 cb.move(0, 4, i, j)
-<<<<<<< HEAD
                 self.assertBoardsEqual(cb, pychess_board())
-=======
-                assertBoardsEqual(cb, pychess_board())
->>>>>>> branch 'master' of https://github.com/akarshkumar0101/KAChess
         
     
     def test_Queen_Movement_In_Starting_Position(self):
@@ -92,17 +63,9 @@ class pychess_board_test(unittest.TestCase):
         for i in range(8):
             for j in range(8):
                 cb.move(0, 3, i, j)
-<<<<<<< HEAD
                 self.assertBoardsEqual(cb, pychess_board())
-=======
-                assertBoardsEqual(cb, pychess_board())
->>>>>>> branch 'master' of https://github.com/akarshkumar0101/KAChess
                 cb.move(7, 3, i, j)
-<<<<<<< HEAD
                 self.assertBoardsEqual(cb, pychess_board())
-=======
-                assertBoardsEqual(cb, pychess_board())
->>>>>>> branch 'master' of https://github.com/akarshkumar0101/KAChess
             
     
     def test_Pawn_Movement_In_Starting_Position(self):
@@ -115,14 +78,7 @@ class pychess_board_test(unittest.TestCase):
             for i in range(8):
                 for j in range(8):
                     cb.move(pawnRow, pawnCol, i, j)
-<<<<<<< HEAD
                     self.assertBoardsEqual(cb, pychess_board())
-=======
-                    assertBoardsEqual(cb, pychess_board())
->>>>>>> branch 'master' of https://github.com/akarshkumar0101/KAChess
-                
-            
-        
         
         pawnRow = 6 
         for pawnCol in range(8):
@@ -131,18 +87,10 @@ class pychess_board_test(unittest.TestCase):
                     cb.move(pawnRow, pawnCol, toRow, toCol)
                     
                     if((toRow == 5 or toRow == 4) and pawnCol - toCol == 0):
-<<<<<<< HEAD
                         self.assertBoardsEqual(cb, self.move_no_check(pawnRow, pawnCol, toRow, toCol, pychess_board()))
-=======
-                        assertBoardsEqual(cb, move(pawnRow, pawnCol, toRow, toCol, pychess_board()))
->>>>>>> branch 'master' of https://github.com/akarshkumar0101/KAChess
                         cb = pychess_board()
                     else:
-<<<<<<< HEAD
                         self.assertBoardsEqual(cb, pychess_board())
-=======
-                        assertBoardsEqual(cb, pychess_board())
->>>>>>> branch 'master' of https://github.com/akarshkumar0101/KAChess
                     
     
     def test_Knight_Movement_In_Starting_Position(self):
@@ -153,18 +101,9 @@ class pychess_board_test(unittest.TestCase):
         for i in range(8):
             for j in range(8):
                 cb.move(0, 1, i, j)
-<<<<<<< HEAD
                 self.assertBoardsEqual(cb, pychess_board())
-=======
-                assertBoardsEqual(cb, pychess_board())
->>>>>>> branch 'master' of https://github.com/akarshkumar0101/KAChess
                 cb.move(0, 6, i, j)
-<<<<<<< HEAD
                 self.assertBoardsEqual(cb, pychess_board())
-=======
-                assertBoardsEqual(cb, pychess_board())
->>>>>>> branch 'master' of https://github.com/akarshkumar0101/KAChess
-        
         
         # white knights
         for i in range(8):
@@ -172,33 +111,17 @@ class pychess_board_test(unittest.TestCase):
                 
                 cb.move(7, 1, i, j)
                 if((i == 5 and j == 0) or(i == 5 and j == 2)):
-<<<<<<< HEAD
                     self.assertBoardsEqual(cb, self.move_no_check(7, 1, i, j, pychess_board()))
-=======
-                    assertBoardsEqual(cb, move(7, 1, i, j, pychess_board()))
->>>>>>> branch 'master' of https://github.com/akarshkumar0101/KAChess
                     cb = pychess_board()
                 else:
-<<<<<<< HEAD
                     self.assertBoardsEqual(cb, pychess_board())
-=======
-                    assertBoardsEqual(cb, pychess_board())
->>>>>>> branch 'master' of https://github.com/akarshkumar0101/KAChess
                 
                 cb.move(7, 6, i, j)
                 if((i == 5 and j == 5) or (i == 5 and j == 7)):
-<<<<<<< HEAD
                     self.assertBoardsEqual(cb, self.move_no_check(7, 6, i, j, pychess_board()))
-=======
-                    assertBoardsEqual(cb, move(7, 6, i, j, pychess_board()))
->>>>>>> branch 'master' of https://github.com/akarshkumar0101/KAChess
                     cb = pychess_board()
                 else:
-<<<<<<< HEAD
                     self.assertBoardsEqual(cb, pychess_board())
-=======
-                    assertBoardsEqual(cb, pychess_board())
->>>>>>> branch 'master' of https://github.com/akarshkumar0101/KAChess
             
     
     # TODO write tests when king is in check
@@ -464,12 +387,7 @@ class pychess_board_test(unittest.TestCase):
     
     
     # moves piece on for easy testing
-<<<<<<< HEAD
-    
     def move_no_check(self, startRow, startCol, endRow, endCol, b):
-=======
-    def move(startRow, startCol, endRow, endCol, b):
->>>>>>> branch 'master' of https://github.com/akarshkumar0101/KAChess
         output = b.getBoard()
         piece = output[startRow][startCol]
         output[startRow][startCol] = 0
