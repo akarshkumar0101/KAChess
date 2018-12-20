@@ -64,7 +64,21 @@ class pychess_board():
     """                                               """
     """                                               """
         
-    def move(self, startRow, startCol, endRow, endCol): # returns int[][] of current board position
+    def get_possible_moves(self): # returns a list of all possible moves. each move is a list [current_row, current_col, end_row, end_col]
+        output = []
+        for row in range(8):
+            for col in range(8):
+                if((self.board[row][col] > 0) == self.white_to_move):
+                    output.extend(self.__get_moves(row, col))
+         
+        return output
+     
+    def move(self, move): # move is list of form [startRow, startCol, endRow, endCol]
+        # returns true if move is completed
+        startRow = move[0]
+        startCol = move[1]
+        endRow = move[2]
+        endCol = move[3]
         
         # if valid move
         if((not self.game_complete) and self.__check_move(startRow, startCol, endRow, endCol)):
@@ -74,164 +88,23 @@ class pychess_board():
         
         return False
     
-    def king_in_danger(self, currentTurn = True):
-        # if currentTurn is True, returns if the king is in danger for player whose turn it is
-        # if currentTurn is False, returns if the king is in danger for player whose turn it is not
-        sign = 0
-        kingRow = -1
-        kingCol = -1
+    def get_board(self): 
+        return self.board[:]
+    
+    def clone(self):
+        output = pychess_board()
         
-        if(currentTurn == self.white_to_move):
-            sign = 1
-        else:
-            sign = -1
+        output.white_to_move = self.white_to_move
+        output.enPassantable[0] = self.enPassantable[0]
+        output.enPassantable[1] = self.enPassantable[1]
+        output.resetEnPassant = self.resetEnPassant
+        output.canCastle = self.canCastle
+        output.game_complete = self.game_complete
+        output.game_complete_message = self.game_complete_message
+        output.draw_is_offered = self.draw_is_offered
+        output.board = self.get_board()
         
-        
-        # find king
-        for row in range(8):
-            for col in range(8):
-                if(self.board[row][col] == sign * 6):
-                    kingRow = row
-                    kingCol = col
-                
-            
-        
-        
-        if(kingRow == -1 or kingCol == -1):
-            # self should be an exception?
-            return False
-        
-        
-        # check enemy knights
-        for row in range(-2, 3, 1):
-            for col in range(-2, 3, 1):
-                if(not self.__out_of_bounds(kingRow + row, kingCol + col) and np.abs(row*col) == 2):
-                    if(self.board[kingRow + row][kingCol + col] == sign * -3):
-                        return True
-                    
-                
-            
-        
-        
-        # check for danger by enemy king
-        for row in range(-1, 2):
-            for col in range(-1, 2):
-                if(not self.__out_of_bounds(kingRow + row, kingCol + col)):
-                    if(self.board[kingRow + row][kingCol + col] == sign * -6):
-                        return True
-                    
-                
-            
-        
-        
-        # check up and down
-        for row in range(1, 7):
-            if(not self.__out_of_bounds(kingRow + row, kingCol)):
-                tempPiece =  self.board[kingRow + row][kingCol]
-                if(tempPiece == sign * -5 or tempPiece == sign * -2):
-                    return True
-                elif(tempPiece * sign > 0):
-                    break
-                
-            else:
-                break
-            
-        
-        
-        for row in range(1, 7):
-            if(not self.__out_of_bounds(kingRow - row, kingCol)):
-                tempPiece =  self.board[kingRow - row][kingCol]
-                if(tempPiece == sign * -5 or tempPiece == sign * -2):
-                    return True
-                elif(tempPiece * sign > 0):
-                    break
-                
-            else:
-                break
-            
-        
-        
-        # check left and right
-        for col in range(1, 7):
-            if(not self.__out_of_bounds(kingRow, kingCol + col)):
-                tempPiece =  self.board[kingRow][kingCol + col]
-                if(tempPiece == sign * -5 or tempPiece == sign * -2):
-                    return True
-                elif(tempPiece * sign > 0):
-                    break
-                
-            else:
-                break
-            
-        
-        
-        for col in range(1, 7):
-            if(not self.__out_of_bounds(kingRow, kingCol - col)):
-                tempPiece =  self.board[kingRow][kingCol - col]
-                if(tempPiece == sign * -5 or tempPiece == sign * -2):
-                    return True
-                elif(tempPiece * sign > 0):
-                    break
-                
-            else:
-                break
-            
-        
-        
-        # check down-right
-        for i in range(1, 7):
-            if(not self.__out_of_bounds(kingRow + i, kingCol + i)):
-                tempPiece =  self.board[kingRow + i][kingCol + i]
-                if(tempPiece == sign * -5 or tempPiece == sign * -2):
-                    return True
-                elif(tempPiece * sign > 0):
-                    break
-                
-            else:
-                break
-            
-        
-        # check up-left
-        for i in range(1, 7):
-            if(not self.__out_of_bounds(kingRow - i, kingCol - i)):
-                tempPiece =  self.board[kingRow - i][kingCol - i]
-                if(tempPiece == sign * -5 or tempPiece == sign * -2):
-                    return True
-                elif(tempPiece * sign > 0):
-                    break
-                
-            else:
-                break
-            
-        
-        # check down-left
-        for i in range(1, 7):
-            if(not self.__out_of_bounds(kingRow + i, kingCol - i)):
-                tempPiece =  self.board[kingRow + i][kingCol - i]
-                if(tempPiece == sign * -5 or tempPiece == sign * -2):
-                    return True
-                elif(tempPiece * sign > 0):
-                    break
-                
-            else:
-                break
-            
-        
-        # check up-right
-        for i in range(1, 7):
-            if(not self.__out_of_bounds(kingRow - i, kingCol + i)):
-                tempPiece =  self.board[kingRow - i][kingCol + i]
-                if(tempPiece == sign * -5 or tempPiece == sign * -2):
-                    return True
-                elif(tempPiece * sign > 0):
-                    break
-                
-            else:
-                break
-            
-        
-        
-        return False 
+        return output
     
     def to_string(self):
         output = "________________________________________________\n"
@@ -254,33 +127,7 @@ class pychess_board():
         
         return output
     
-    def clone(self):
-        output = pychess_board()
-        
-        output.white_to_move = self.white_to_move
-        
-        for i in range(2):
-            output.enPassantable[i] = self.enPassantable[i]
-        
-        output.resetEnPassant = self.resetEnPassant
-        
-        output.board = self.get_board()
-        
-        return output
-    
-    def get_possible_moves(self): # returns a list of all possible moves. each move is a list [current_row, current_col, end_row, end_col]
-        output = []
-        for row in range(8):
-            for col in range(8):
-                if((self.board[row][col] > 0) == self.white_to_move):
-                    output.extend(self.__get_moves(row, col))
-         
-        return output
-        
-    def get_board(self): 
-        return self.board[:]
-    
-    def offer_draw(self): # TODO implement
+    def offer_draw(self):
         self.draw_is_offered = True
         
     def accept_draw(self):
@@ -379,7 +226,7 @@ class pychess_board():
         
         # if king is in danger after move is completed
         turnComplete = self.clone().__move_piece_no_check(startRow, startCol, endRow, endCol) 
-        if(turnComplete.king_in_danger(False)):
+        if(turnComplete.__king_in_danger(False)):
             return False
         
 
@@ -419,7 +266,7 @@ class pychess_board():
         
         
         # castling
-        if(not self.king_in_danger(True) and startCol == 4 and rowDiff == 0):
+        if(not self.__king_in_danger(True) and startCol == 4 and rowDiff == 0):
             
             # castling kingside
             if(endCol == 6 and self.__is_empty_between(startRow, startCol, endRow, 7) and self.__is_safe_between(startRow, startCol, endRow, 7)):
@@ -746,7 +593,7 @@ class pychess_board():
         elif(rowDiff == 0):
             for col in range(startCol+1, endCol):
                 copy = copy.__move_piece_no_check(startRow, col - 1, startRow, col)
-                if(copy.king_in_danger(tempTurn)):
+                if(copy.__king_in_danger(tempTurn)):
                     return False
                 
                 tempTurn = not tempTurn
@@ -754,7 +601,7 @@ class pychess_board():
         elif(colDiff == 0):
             for row in range(startRow+1, endRow):
                 copy = copy.__move_piece_no_check(row - 1, startCol, row, startCol)
-                if(copy.king_in_danger(tempTurn)):
+                if(copy.__king_in_danger(tempTurn)):
                     return False
                 
                 tempTurn = not tempTurn
@@ -762,6 +609,165 @@ class pychess_board():
         
         
         return True
+    
+    def __king_in_danger(self, currentTurn = True):
+        # if currentTurn is True, returns if the king is in danger for player whose turn it is
+        # if currentTurn is False, returns if the king is in danger for player whose turn it is not
+        sign = 0
+        kingRow = -1
+        kingCol = -1
+        
+        if(currentTurn == self.white_to_move):
+            sign = 1
+        else:
+            sign = -1
+        
+        
+        # find king
+        for row in range(8):
+            for col in range(8):
+                if(self.board[row][col] == sign * 6):
+                    kingRow = row
+                    kingCol = col
+                
+            
+        
+        
+        if(kingRow == -1 or kingCol == -1):
+            # self should be an exception?
+            return False
+        
+        
+        # check enemy knights
+        for row in range(-2, 3, 1):
+            for col in range(-2, 3, 1):
+                if(not self.__out_of_bounds(kingRow + row, kingCol + col) and np.abs(row*col) == 2):
+                    if(self.board[kingRow + row][kingCol + col] == sign * -3):
+                        return True
+                    
+                
+            
+        
+        
+        # check for danger by enemy king
+        for row in range(-1, 2):
+            for col in range(-1, 2):
+                if(not self.__out_of_bounds(kingRow + row, kingCol + col)):
+                    if(self.board[kingRow + row][kingCol + col] == sign * -6):
+                        return True
+                    
+                
+            
+        
+        
+        # check up and down
+        for row in range(1, 7):
+            if(not self.__out_of_bounds(kingRow + row, kingCol)):
+                tempPiece =  self.board[kingRow + row][kingCol]
+                if(tempPiece == sign * -5 or tempPiece == sign * -2):
+                    return True
+                elif(tempPiece * sign > 0):
+                    break
+                
+            else:
+                break
+            
+        
+        
+        for row in range(1, 7):
+            if(not self.__out_of_bounds(kingRow - row, kingCol)):
+                tempPiece =  self.board[kingRow - row][kingCol]
+                if(tempPiece == sign * -5 or tempPiece == sign * -2):
+                    return True
+                elif(tempPiece * sign > 0):
+                    break
+                
+            else:
+                break
+            
+        
+        
+        # check left and right
+        for col in range(1, 7):
+            if(not self.__out_of_bounds(kingRow, kingCol + col)):
+                tempPiece =  self.board[kingRow][kingCol + col]
+                if(tempPiece == sign * -5 or tempPiece == sign * -2):
+                    return True
+                elif(tempPiece * sign > 0):
+                    break
+                
+            else:
+                break
+            
+        
+        
+        for col in range(1, 7):
+            if(not self.__out_of_bounds(kingRow, kingCol - col)):
+                tempPiece =  self.board[kingRow][kingCol - col]
+                if(tempPiece == sign * -5 or tempPiece == sign * -2):
+                    return True
+                elif(tempPiece * sign > 0):
+                    break
+                
+            else:
+                break
+            
+        
+        
+        # check down-right
+        for i in range(1, 7):
+            if(not self.__out_of_bounds(kingRow + i, kingCol + i)):
+                tempPiece =  self.board[kingRow + i][kingCol + i]
+                if(tempPiece == sign * -5 or tempPiece == sign * -2):
+                    return True
+                elif(tempPiece * sign > 0):
+                    break
+                
+            else:
+                break
+            
+        
+        # check up-left
+        for i in range(1, 7):
+            if(not self.__out_of_bounds(kingRow - i, kingCol - i)):
+                tempPiece =  self.board[kingRow - i][kingCol - i]
+                if(tempPiece == sign * -5 or tempPiece == sign * -2):
+                    return True
+                elif(tempPiece * sign > 0):
+                    break
+                
+            else:
+                break
+            
+        
+        # check down-left
+        for i in range(1, 7):
+            if(not self.__out_of_bounds(kingRow + i, kingCol - i)):
+                tempPiece =  self.board[kingRow + i][kingCol - i]
+                if(tempPiece == sign * -5 or tempPiece == sign * -2):
+                    return True
+                elif(tempPiece * sign > 0):
+                    break
+                
+            else:
+                break
+            
+        
+        # check up-right
+        for i in range(1, 7):
+            if(not self.__out_of_bounds(kingRow - i, kingCol + i)):
+                tempPiece =  self.board[kingRow - i][kingCol + i]
+                if(tempPiece == sign * -5 or tempPiece == sign * -2):
+                    return True
+                elif(tempPiece * sign > 0):
+                    break
+                
+            else:
+                break
+            
+        
+        
+        return False 
     
     
     
@@ -812,12 +818,12 @@ class pychess_board():
    
     def __check__game_complete(self):
         if(len(self.get_possible_moves()) == 0):
-            self.__game_complete()
+            self.__end_game()
             
-    def __game_complete(self):
+    def __end_game(self):
         self.game_complete = True
         if(len(self.get_possible_moves()) == 0):
-            if(self.king_in_danger()):
+            if(self.__king_in_danger()):
                 self.game_ending_message = "Checkmate. "
                 if(self.white_to_move):
                     self.game_ending_message += "Black has won!"
