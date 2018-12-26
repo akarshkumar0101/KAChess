@@ -1,6 +1,7 @@
 import numpy as np;
 import cv2;
 import time;
+import math;
 import glob;
 
 
@@ -17,23 +18,16 @@ def getPoints(corners):
             points[cx][cy][3] = corners[7 * (cy - 1 + 1) + (cx - 1 + 1)][0];
 
     for cy in range(1, 8):
-        avgdx = 0.0;
-        avgdy = 0.0;
-        for cx in range(1, 6):
+
+        offset = np.zeros(2, dtype=np.float32);
+        for cx in range(1, 7):
             pt1 = corners[7 * (cy - 1) + (cx - 1)][0];
             pt2 = corners[7 * (cy - 1) + (cx - 1 + 1)][0];
-            avgdx += pt2[0] - pt1[0];
-            avgdy += pt2[1] - pt1[1];
-        avgdx /= 6;
-        avgdy /= 6;
+            offset += (pt2-pt1);
+        offset /= 6;
 
-        lpt = np.zeros((2), dtype=np.float32);
-        rpt = np.zeros((2), dtype=np.float32);
-
-        lpt[0] = corners[7 * (cy - 1) + (1 - 1)][0][0] - avgdx;
-        lpt[1] = corners[7 * (cy - 1) + (1 - 1)][0][1] - avgdy;
-        rpt[0] = corners[7 * (cy - 1) + (1 - 1 + 6)][0][0] + avgdx;
-        rpt[1] = corners[7 * (cy - 1) + (1 - 1 + 6)][0][1] + avgdy;
+        lpt = corners[7 * (cy - 1) + (1 - 1)][0] - offset;
+        rpt = corners[7 * (cy - 1) + (7 - 1)][0] + offset;
 
         # left of 0
         points[0][cy][0] = lpt;
@@ -54,23 +48,16 @@ def getPoints(corners):
         points[7][cy - 1][2] = corners[7 * (cy - 1) + (7 - 1)][0];
 
     for cx in range(1, 8):
-        avgdx = 0.0;
-        avgdy = 0.0;
-        for cy in range(1, 6):
+
+        offset = np.zeros(2, dtype=np.float32);
+        for cy in range(1, 7):
             pt1 = corners[7 * (cy - 1) + (cx - 1)][0];
             pt2 = corners[7 * (cy - 1 + 1) + (cx - 1)][0];
-            avgdx += pt2[0] - pt1[0];
-            avgdy += pt2[1] - pt1[1];
-        avgdx /= 6;
-        avgdy /= 6;
+            offset += (pt2 - pt1);
+        offset /= 6;
 
-        upt = np.zeros((2), dtype=np.float32);
-        dpt = np.zeros((2), dtype=np.float32);
-
-        upt[0] = corners[7 * (1 - 1) + (cx - 1)][0][0] - avgdx;
-        upt[1] = corners[7 * (1 - 1) + (cx - 1)][0][1] - avgdy;
-        dpt[0] = corners[7 * (1 - 1) + (cx - 1 + 6)][0][0] + avgdx;
-        dpt[1] = corners[7 * (1 - 1) + (cx - 1 + 6)][0][1] + avgdy;
+        upt = corners[7 * (1 - 1) + (cx - 1)][0] - offset;
+        dpt = corners[7 * (7 - 1) + (cx - 1)][0] + offset;
 
         # up of 0
         points[cx][0][0] = upt;
@@ -79,7 +66,7 @@ def getPoints(corners):
         # down of 0
         points[cx][0][2] = corners[7 * (1 - 1) + (cx - 1)][0];
         # up of 7
-        points[cy][7][0] = corners[7 * (7 - 1) + (cx - 1)][0];
+        points[cx][7][0] = corners[7 * (7 - 1) + (cx - 1)][0];
         # lefter side
         # up of 0
         points[cx - 1][0][1] = upt;
@@ -90,51 +77,37 @@ def getPoints(corners):
         # up of 7
         points[cx - 1][7][1] = corners[7 * (7 - 1) + (cx - 1)][0];
 
-    avgdx = 0.0;
-    avgdy = 0.0;
-    for cx in range(1, 6):
+    offset = np.zeros(2, dtype=np.float32);
+    for cx in range(1, 7):
         pt1 = points[cx][0][0];
         pt2 = points[cx][0][1];
-        avgdx += pt2[0] - pt1[0];
-        avgdy += pt2[1] - pt1[1];
-    avgdx /= 6;
-    avgdy /= 6;
+        offset += (pt2-pt1);
+    offset /= 6;
 
-    lpt = np.zeros(2, dtype=np.float32);
-    rpt = np.zeros(2, dtype=np.float32);
-    lpt[0] = points[0][0][1][0] - avgdx;
-    lpt[1] = points[0][0][1][1] - avgdy;
-    rpt[0] = points[7][0][0][0] + avgdx;
-    rpt[1] = points[7][0][0][1] + avgdy;
+    lpt = points[0][0][1] - offset;
+    rpt = points[7][0][0] + offset;
 
     points[0][0][0] = lpt;
     points[7][0][1] = rpt;
 
-    avgdx = 0.0;
-    avgdy = 0.0;
-    for cx in range(1, 6):
-        pt1 = points[cx][7][0];
-        pt2 = points[cx][7][1];
-        avgdx += pt2[0] - pt1[0];
-        avgdy += pt2[1] - pt1[1];
-    avgdx /= 6;
-    avgdy /= 6;
+    offset = np.zeros(2, dtype=np.float32);
+    for cx in range(1, 7):
+        pt1 = points[cx][7][2];
+        pt2 = points[cx][7][3];
+        offset += (pt2 - pt1);
+    offset /= 6;
 
-    lpt = np.zeros(2, dtype=np.float32);
-    rpt = np.zeros(2, dtype=np.float32);
-    lpt[0] = points[0][7][1][0] - avgdx;
-    lpt[1] = points[0][7][1][1] - avgdy;
-    rpt[0] = points[7][7][2][0] + avgdx;
-    rpt[1] = points[7][7][2][1] + avgdy;
+    lpt = points[0][7][3] - offset;
+    rpt = points[7][7][2] + offset;
 
-    points[0][7][0] = lpt;
-    points[7][7][1] = rpt;
+    points[0][7][2] = lpt;
+    points[7][7][3] = rpt;
 
     return points;
 
 
 
-def showChessBoard(img, scale=0.3):
+def showChessBoard(img, scale=0.25):
     iscale = 1 / scale;
     simg = cv2.resize(img, (0, 0), fx=scale, fy=scale);
 
@@ -147,21 +120,6 @@ def showChessBoard(img, scale=0.3):
         corners = np.float32(corners * iscale);
         points = getPoints(corners);
 
-        for point in corners:
-            point = point[0];
-            x = point[0];
-            y = point[1];
-            # x *= np.float32(iscale);
-            # y *= np.float32(iscale);
-
-            cv2.circle(img, (x, y), 2, (0, 255, 0), -1);
-
-
-        #rx = np.random.randint(0, 8);
-        #ry = np.random.randint(0, 8);
-        rx = (int(time.time()*10))%8;
-        ry = (int(time.time()*10/8))%8;
-
         for rx in range(0,8):
             for ry in range(0,8):
 
@@ -170,16 +128,30 @@ def showChessBoard(img, scale=0.3):
                 for point in points[rx][ry]:
 
                     point = point;
-                    x = point[0]+cx;
-                    y = point[1]+cy;
-                    x = np.float32(x/2);
-                    y = np.float32(y/2);
+                    x = point[0];
+                    y = point[1];
 
+                    cv2.circle(img, (x,y), 5, (0, 0, 255), -1);
 
-                    cv2.circle(img, (x, y), 2, (0, 0, 255), -1);
-
+        test(points,img);
     cv2.imshow("chess", img);
+    return;
 
+
+def test(points, img):
+    for cy in range(0,8):
+        for cx in range(0,8):
+            ptsfrom = points[cx][cy];
+            ptsto = np.float32([[0,0],[500,0],[0,500],[500,500]]);
+
+            Mtrans = cv2.getPerspectiveTransform(ptsfrom,ptsto);
+
+            sqrimg = cv2.warpPerspective(img, Mtrans, (500, 500));
+
+            strf = "sqr "+str(cx)+","+str(cy);
+            cv2.imshow(strf,sqrimg);
+
+    return;
 
 # termination criteria
 criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001);
