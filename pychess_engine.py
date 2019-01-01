@@ -74,7 +74,7 @@ class pychess_board_engine:
             self.pychess_board.move(nextMove[0], nextMove[1], nextMove[2], nextMove[3])
         
     def main(self):
-   
+        pass
 if(__name__ == "__main__"):
     py = pychess_board_engine()
     py.main()
