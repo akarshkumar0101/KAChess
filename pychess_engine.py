@@ -1,7 +1,7 @@
 from pychess_board import pychess_board
 
 class pychess_board_engine:
-    
+    """ This class chooses the best move based on the position of a pychess_board """
     
     """
     int evaluation

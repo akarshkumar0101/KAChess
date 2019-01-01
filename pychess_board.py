@@ -2,8 +2,10 @@ import numpy as np
 import copy
 
 class pychess_board():
-    # FIXME things like checkmate, stalemate, and promotion
+    """ This class provides chessboard logic """
     
+    # FIXME promotion
+    """                                               """
     """                     NOTES                     """
     """                      """                      """
         positive is white

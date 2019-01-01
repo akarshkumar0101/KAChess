@@ -4,10 +4,11 @@ from numpy.f2py.auxfuncs import throw_error
 
 
 class pychess_board_test(unittest.TestCase):
+    """ This class tests the functionality of pychess_board """
     
     """                                                                """
     """                                                                """
-    """                    starting position tests                      """
+    """                    starting position tests                     """
     """                                                                """
     """                                                                """
     def test_rook_movement_in_starting_position(self):
