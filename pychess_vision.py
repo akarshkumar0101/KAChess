@@ -153,6 +153,16 @@ def test(points, img):
 
     return;
 
+
+def isProdominantlyBlue(col):
+    blue = col[0];
+    green = col[1];
+    red = col[2];
+    avg = np.average(green, red);
+    if blue > avg*1.5:
+        return True;
+    return False;
+
 # termination criteria
 criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001);
 # Arrays to store object points and image points from all the images.
