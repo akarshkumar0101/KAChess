@@ -4,7 +4,7 @@ import copy
 class pychess_board():
     """ This class provides chessboard logic """
     
-    # FIXME promotion
+    # FIXME promotion to piece other than queen in move_piece method
     """                                               """
     """                     NOTES                     """
     """                      """                      """
@@ -32,7 +32,7 @@ class pychess_board():
         self.board
         self.enPassantable #:row, col -- if no row/col, set to -1. reset on 1, don't on 0
         self.resetEnPassant -- enPassantable register to be reset next turn
-        self.white_to_move
+        self.whiteToMove
         self.canCastle #: [whiteKingside, whiteQueenside, blackKingside, blackQueenside] boolean array
         self.game_has_ended --> true only if the current game has ended
         self.game_ending_message --> describes game ending
@@ -43,7 +43,7 @@ class pychess_board():
     
     """                                               """
     """                                               """
-    """                CONSTRUCTOR METHODS            """
+    """                  CONSTRUCTOR                  """
     """                                               """
     """                                               """
     
@@ -58,7 +58,7 @@ class pychess_board():
 
             self.board = temp_board
             
-        self.white_to_move = white_to_move
+        self.whiteToMove = white_to_move
         
         self.enPassantable = [-1, -1]
         self.resetEnPassant = False
@@ -80,7 +80,7 @@ class pychess_board():
         output = []
         for row in range(8):
             for col in range(8):
-                if((self.board[row][col] > 0) == self.white_to_move):
+                if((self.board[row][col] > 0) == self.whiteToMove):
                     output.extend(self.__get_moves(row, col))
          
         return output
@@ -108,6 +108,10 @@ class pychess_board():
             output.append(self.board[i][:])
             
         return output
+    
+    
+    def white_to_move(self):
+        return self.whiteToMove
     
     
     def clone(self):
@@ -142,11 +146,11 @@ class pychess_board():
         
     def accept_draw(self):
         if(self.draw_is_offered):
-            game_complete()
+           self.__end_game()
         
         
     def resign(self):
-        self.game_complete()
+        self.__end_game()
         
         
     """                                               """
@@ -160,7 +164,7 @@ class pychess_board():
     """            methods to move pieces             """
     def __move_piece(self, startRow, startCol, endRow, endCol): # TODO check the logic 
         
-        # reset enPassantable if reset flag is set
+        # reset enPassantable if reset flag is set (this should always be first)
         if(self.resetEnPassant):
             self.enPassantable = [-1, -1]
         
@@ -192,7 +196,9 @@ class pychess_board():
                 
         elif(piece == 1):
             
-            if(not self.__out_of_bounds(endRow + 1, endCol) and self.__is_enemy_square(piece, endRow + 1, endCol)):
+            if(endRow == 0):
+                self.__promote(endRow, endCol, 5)
+            elif(not self.__out_of_bounds(endRow + 1, endCol) and self.__is_enemy_square(piece, endRow + 1, endCol)):
                 self.__en_passant(endRow + 1, endCol)
                 
             elif(startRow == 6 and endRow == 4):
@@ -200,7 +206,9 @@ class pychess_board():
             
         elif(piece == -1):
             
-            if(not self.__out_of_bounds(endRow - 1, endCol) and self.__is_enemy_square(piece, endRow - 1, endCol)):
+            if(endRow == 8):
+                self.__promote(endRow, endCol, -5)
+            elif(not self.__out_of_bounds(endRow - 1, endCol) and self.__is_enemy_square(piece, endRow - 1, endCol)):
                 self.__en_passant(endRow - 1, endCol)
                 
             elif(startRow == 1 and endRow == 3):
@@ -225,7 +233,7 @@ class pychess_board():
         
         self.board[startRow][startCol] = 0 # move piece
         self.board[endRow][endCol] = piece
-        self.white_to_move = not self.white_to_move
+        self.whiteToMove = not self.whiteToMove
 
     def __move_piece_no_check(self, startRow, startCol, endRow, endCol): # returns a new pychess_board object with the piece moved regardless if it is a legal move
         output = self.clone() # clone is redundant but for safety
@@ -385,7 +393,7 @@ class pychess_board():
         piece = self.board[startRow][startCol]
         
         # if incorrect turn
-        if((piece < 0) == self.white_to_move):
+        if((piece < 0) == self.whiteToMove):
             return False
         
         # if starting or ending squares are out of bounds
@@ -597,31 +605,31 @@ class pychess_board():
             return self.__is_safe_between(endRow, startCol, startRow, endCol)
         
         
-        copy = self.clone()
+        a_copy = self.clone()
 
         # actually check if safe between
         tempTurn = False
         if(rowDiff == colDiff):
             for i in range(1, rowDiff):
-                copy = copy.__move_piece_no_check(startRow + i - 1, startCol + i - 1, startRow + i, startCol + i)
+                a_copy = a_copy.__move_piece_no_check(startRow + i - 1, startCol + i - 1, startRow + i, startCol + i)
                 
-                if(kingInDanger(copy, tempTurn)):
+                if(kingInDanger(a_copy, tempTurn)):
                     return False
                 
                 tempTurn = not tempTurn
             
         elif(rowDiff == 0):
             for col in range(startCol+1, endCol):
-                copy = copy.__move_piece_no_check(startRow, col - 1, startRow, col)
-                if(copy.__king_in_danger(tempTurn)):
+                a_copy = a_copy.__move_piece_no_check(startRow, col - 1, startRow, col)
+                if(a_copy.__king_in_danger(tempTurn)):
                     return False
                 
                 tempTurn = not tempTurn
             
         elif(colDiff == 0):
             for row in range(startRow+1, endRow):
-                copy = copy.__move_piece_no_check(row - 1, startCol, row, startCol)
-                if(copy.__king_in_danger(tempTurn)):
+                a_copy = a_copy.__move_piece_no_check(row - 1, startCol, row, startCol)
+                if(a_copy.__king_in_danger(tempTurn)):
                     return False
                 
                 tempTurn = not tempTurn
@@ -637,7 +645,7 @@ class pychess_board():
         kingRow = -1
         kingCol = -1
         
-        if(currentTurn == self.white_to_move):
+        if(currentTurn == self.whiteToMove):
             sign = 1
         else:
             sign = -1
@@ -835,6 +843,9 @@ class pychess_board():
         output.append(col)
         return output
    
+    def __promote(self, row, col, piece):
+        self.board[row][col] = piece
+   
     def __check_game_complete(self):
         if(len(self.get_possible_moves()) == 0):
             self.__end_game()
@@ -844,7 +855,7 @@ class pychess_board():
         if(len(self.get_possible_moves()) == 0):
             if(self.__king_in_danger()):
                 self.game_ending_message = "Checkmate. "
-                if(self.white_to_move):
+                if(self.whiteToMove):
                     self.game_ending_message += "Black has won!"
                 else:
                     self.game_ending_message += "White has won!"
@@ -853,7 +864,7 @@ class pychess_board():
         elif(self.draw_is_offered):
             self.game_ending_message = "It is a draw."
         else:
-            if(self.white_to_move):
+            if(self.whiteToMove):
                 self.game_ending_message = "White has resigned. Black wins!"
             else:
                 self.game_ending_message = "Black has resigned. White wins!"

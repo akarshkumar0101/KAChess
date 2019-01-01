@@ -19,62 +19,103 @@ class pychess_board_engine:
      * Queens are 12 pts
      * King is infinity pts
      """
+    """                                               """
+    """                                               """
+    """                  CONSTRUCTOR                  """
+    """                                               """
+    """                                               """
     
-    def assertBoardsEqual(self, a, b):
-        boardA = a.get_board()
-        boardB = b.get_board()
-        
-        for i in range(len(boardA)):
-            for j in range(len(boardA[0])):
-                self.assertEqual(boardA[i][j], boardB[i][j])
-        
-
-    
-    # makes a new engine with userPlayingWhite specifying whether the user is playing white
+   
     def __init__(self, board_setup = None, white_to_move = True, user_plays_white = True):
-        self.pychess_board_board = pychess_board(board_setup, white_to_move)
-        self.userPlaysWhite = user_plays_white
-        self.engineToMove = not user_plays_white
-    
-    
-    
-    def evaluateBoard(self):
-        position = self.pychess_board.getpychess_board()
+        # TODO init position look up tables
         
-        self.evaluation = 0 # reset evaluation
+        self.chess_board = pychess_board(board_setup, white_to_move)
         
-        # get position metrics
-        # material
-        self.evaluation += self.evaluateMaterial()
+        if(user_plays_white):
+            self.sign = -1 # sign of pieces controlled by engine
+        else:
+            self.sign = 1
+    
         
-        # position
-        self.evaluation += self.evaluatePosition()
+         
         
-    
-    # returns a position score (double)
-    def evaluatePosition(self):
-        # TODO implement evaluatePosition
-        return 0
-    
-    # returns a position score (double)
-    def evaluateMaterial(self):
-        # TODO implement evaluateMaterial
-        return 0
-    
+    """                                               """
+    """                                               """
+    """                PUBLIC METHODS                 """
+    """                                               """
+    """                                               """
     
     # returns move in form [startRow, startCol, endRow, endCol]
-    def getBestMove(self, millisecondsToThink):
-        # TODO implement getBestMove
+    def get_best_move(self, milliseconds_to_think):
+        # TODO implement get_best_move
         return []
-    
-    
-    def play(self):
-        if(engineToMove):
-            nextMove = getBestMove(2000)
-            self.pychess_board.move(nextMove[0], nextMove[1], nextMove[2], nextMove[3])
+       
+       
+    """                                               """
+    """                                               """
+    """                PRIVATE METHODS                """
+    """                                               """
+    """                                               """
         
-    def main(self):
-        pass
-if(__name__ == "__main__"):
-    py = pychess_board_engine()
-    py.main()
+    def __evaluate_board(self):
+        """ returns a position score """
+        # combination of material and position evaluation
+        evaluation = self.__evaluate_material(self.chess_board) + self.__evaluate_position(self.chess_board)
+        
+        return evaluation 
+    
+    def __evaluate_position(self, chessboard):
+        """ chessboard is a pychess_board object """
+        board = chessboard.get_board()
+        sum = 0
+        
+        for row in range(board):
+            for col in range(board[0]):
+                sum += self.__evaluate_piece_position(board[row][col], row, col)
+
+        return sum * self.sign
+    
+    # returns a position score (double)
+
+    def __evaluate_material(self, chessboard):
+        """ chessboard is a pychess_board object. 
+        returns positive rating if good for engine, negative if bad """
+        
+        board = chessboard.get_board()
+        sum = 0
+        
+        for row in range(board):
+            for col in range(board[0]):
+                sum += board[row][col]
+        
+        return sum * self.sign
+    
+    def __evaluate_piece_position(self, piece, row, col):
+        """ gets piece position value from lookup table """
+        
+        if(piece == 1):
+            return self.white_pawn_position_table[row][col]
+        elif(piece == 2):
+            return self.white_rook_position_table[row][col]
+        elif(piece == 3):
+            return self.white_knight_position_table[row][col]
+        elif(piece == 4):
+            return self.white_bishop_position_table[row][col]
+        elif(piece == 5):
+            return self.white_queen_position_table[row][col]
+        elif(piece == 6):
+            return self.white_king_position_table[row][col]
+        elif(piece == -1):
+            return self.black_pawn_position_table[row][col]
+        elif(piece == -2):
+            return self.black_rook_position_table[row][col]
+        elif(piece == -3):
+            return self.black_knight_position_table[row][col]
+        elif(piece == -4):
+            return self.black_bishop_position_table[row][col]
+        elif(piece == -5):
+            return self.black_queen_position_table[row][col]
+        elif(piece == -6):
+            return self.black_king_position_table[row][col]
+        else:
+            raise ValueError
