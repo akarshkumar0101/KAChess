@@ -8,3 +8,4 @@
 /__pycache__/
 /pychess_board.pyc
 .idea/other.xml
+/.pydevproject
