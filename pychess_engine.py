@@ -29,7 +29,7 @@ class pychess_board_engine:
     def __init__(self, board_setup = None, white_to_move = True, user_plays_white = True):
         # TODO init position look up tables
         
-        self.chess_board = pychess_board(board_setup, white_to_move)
+        self.chessboard = pychess_board(board_setup, white_to_move)
         
         if(user_plays_white):
             self.sign = -1 # sign of pieces controlled by engine
@@ -45,10 +45,24 @@ class pychess_board_engine:
     """                                               """
     """                                               """
     
-    # returns move in form [startRow, startCol, endRow, endCol]
     def get_best_move(self, milliseconds_to_think):
-        # TODO implement get_best_move
-        return []
+        """ returns move in form [startRow, startCol, endRow, endCol] """
+        """ this is a simple engine. could do a lot better with a game tree """
+        """ not using milliseconds to think, only searches moves one level deep """
+        possible_moves = self.chessboard.get_possible_moves()
+        chessboard_copy = self.chessboard.copy()
+        best_move = None
+        max_evaluation = 0
+        
+        for a_move in possible_moves:
+            chessboard_copy = self.chessboard.copy()
+            chessboard_copy.move(a_move)
+            current_evaluation = self.__evaluate_board(chessboard_copy)
+            if max_evaluation < current_evaluation:
+                max_evaluation = current_evaluation
+                best_move = a_move
+            
+        return best_move
        
        
     """                                               """
@@ -60,7 +74,7 @@ class pychess_board_engine:
     def __evaluate_board(self):
         """ returns a position score """
         # combination of material and position evaluation
-        evaluation = self.__evaluate_material(self.chess_board) + self.__evaluate_position(self.chess_board)
+        evaluation = self.__evaluate_material(self.chessboard) + self.__evaluate_position(self.chessboard)
         
         return evaluation 
     
