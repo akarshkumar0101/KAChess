@@ -76,6 +76,9 @@ class pychess_board_engine:
         # combination of material and position evaluation
         evaluation = self.__evaluate_material(self.chessboard) + self.__evaluate_position(self.chessboard)
         
+        
+        """ use a game tree """ 
+        
         return evaluation 
     
     def __evaluate_position(self, chessboard):
