@@ -47,8 +47,9 @@ class pychess_board_engine:
     
     def get_best_move(self, milliseconds_to_think):
         """ returns move in form [startRow, startCol, endRow, endCol] """
-        """ this is a simple engine. could do a lot better with a game tree """
-        """ not using milliseconds to think, only searches moves one level deep """
+        """ use a game tree """ 
+        """ each node has chessboard, evaluation, and set of nodes corresponding to moves 
+        
         possible_moves = self.chessboard.get_possible_moves()
         chessboard_copy = self.chessboard.copy()
         best_move = None
@@ -64,6 +65,9 @@ class pychess_board_engine:
             
         return best_move
        
+       """
+       
+       
        
     """                                               """
     """                                               """
@@ -75,9 +79,6 @@ class pychess_board_engine:
         """ returns a position score """
         # combination of material and position evaluation
         evaluation = self.__evaluate_material(self.chessboard) + self.__evaluate_position(self.chessboard)
-        
-        
-        """ use a game tree """ 
         
         return evaluation 
     
