@@ -36,6 +36,7 @@ class pychess_board():
         self.canCastle #: [whiteKingside, whiteQueenside, blackKingside, blackQueenside] boolean array
         self.game_has_ended --> true only if the current game has ended
         self.game_ending_message --> describes game ending
+        self.draw_is_offered # draw offered by [white, black]
     """
     
     
@@ -50,7 +51,14 @@ class pychess_board():
     def __init__(self, board_setup = None, white_to_move = True):
         
         if(board_setup == None):
-            self.board = [[-2, -3, -4, -5, -6, -4, -3, -2],[-1, -1, -1, -1, -1, -1, -1, -1],[ 0,  0,  0,  0,  0,  0,  0,  0],[ 0,  0,  0,  0,  0,  0,  0,  0],[ 0,  0,  0,  0,  0,  0,  0,  0],[ 0,  0,  0,  0,  0,  0,  0,  0],[ 1,  1,  1,  1,  1,  1,  1,  1],[ 2,  3,  4,  5,  6,  4,  3,  2]]
+            self.board = [[-2, -3, -4, -5, -6, -4, -3, -2],\
+                          [-1, -1, -1, -1, -1, -1, -1, -1],\
+                          [ 0,  0,  0,  0,  0,  0,  0,  0],\
+                          [ 0,  0,  0,  0,  0,  0,  0,  0],\
+                          [ 0,  0,  0,  0,  0,  0,  0,  0],\
+                          [ 0,  0,  0,  0,  0,  0,  0,  0],\
+                          [ 1,  1,  1,  1,  1,  1,  1,  1],\
+                          [ 2,  3,  4,  5,  6,  4,  3,  2]]
         else:
             temp_board = []
             for i in range(8):
@@ -62,10 +70,12 @@ class pychess_board():
         
         self.enPassantable = [-1, -1]
         self.resetEnPassant = False
+        
+        # can castle [white_kingside, white_queenside, black_kingside, black_queenside]
         self.canCastle = [True, True, True, True]
         self.game_complete = False
         self.game_complete_message = ""
-        self.draw_is_offered = False
+        self.draw_is_offered = [False, False] # draw offered by [white, black]
         
         
         
@@ -82,7 +92,8 @@ class pychess_board():
             for col in range(8):
                 if((self.board[row][col] > 0) == self.whiteToMove):
                     output.extend(self.__get_moves(row, col))
-         
+        
+        assert(len(output) > 0)
         return output
      
      
@@ -140,17 +151,51 @@ class pychess_board():
         return output
     
     
-    def offer_draw(self):
-        self.draw_is_offered = True
+    def resign(self, current_turn=True): #bool current turn
+        if(current_turn):
+            if(self.white_to_move()):
+                self.__end_game("White resigns. Black wins!")
+            else:
+                self.__end_game("Black resigns. White wins!")
+        else:
+            if(not self.white_to_move()):
+                self.__end_game("White resigns. Black wins!")
+            else:
+                self.__end_game("Black resigns. White wins!")
+
+    
+    def offer_draw(self, current_turn=True):
+        
+        if(current_turn):
+            
+            if(self.white_to_move()):
+                self.draw_is_offered[0] = True
+            else:
+                self.draw_is_offered[1] = True
+        else:
+            
+            if(self.white_to_move()):
+                self.draw_is_offered[1] = True
+            else:
+                self.draw_is_offered[0] = True
         
         
-    def accept_draw(self):
-        if(self.draw_is_offered):
-           self.__end_game()
+    def accept_draw(self, current_turn=True):
         
+        if(current_turn):
+            
+            if(self.white_to_move() and draw_is_offered[1]):
+                self.__end_game("It's a draw.")
+            elif(not self.white_to_move() and draw_is_offered[0]):
+                self.__end_game("It's a draw.")
+                
+        else:
+            
+            if(not self.white_to_move() and draw_is_offered[1]):
+                self.__end_game("It's a draw.")
+            elif(self.white_to_move() and draw_is_offered[0]):
+                self.__end_game("It's a draw.")
         
-    def resign(self):
-        self.__end_game()
         
         
     """                                               """
@@ -243,7 +288,7 @@ class pychess_board():
                     
     
     
-    """methods to get all possible moves in the current position from the specified square"""
+    """    methods to get all possible moves in the current position from the specified square    """
     def __get_moves(self, row, col):
         piece = self.board[row][col]
         
@@ -266,16 +311,16 @@ class pychess_board():
         output = []
         for i in range(8):
             if(self.__check_move(row, col, row + i, col + i)):
-                output.append(self.__new_move(row + i, col + i))
+                output.append(self.__new_move(row, col, row + i, col + i))
             
             if(self.__check_move(row, col, row - i, col + i)):
-                output.append(self.__new_move(row - i, col + i))
+                output.append(self.__new_move(row, col, row - i, col + i))
             
             if(self.__check_move(row, col, row + i, col - i)):
-                output.append(self.__new_move(row + i, col - i))
+                output.append(self.__new_move(row, col, row + i, col - i))
             
             if(self.__check_move(row, col, row - i, col - i)):
-                output.append(self.__new_move(row - i, col - i))
+                output.append(self.__new_move(row, col, row - i, col - i))
         
         return output
     
@@ -285,11 +330,7 @@ class pychess_board():
         for row in range(-1, 2):
             for col in range(-1, 2):
                 if(self.__check_move(kingRow, kingCol, kingRow + row, kingCol + col)):
-                    output.append(self.__new_move(kingRow + row,kingCol + col))
-                
-            
-            
-        
+                    output.append(self.__new_move(kingRow, kingCol, kingRow + row,kingCol + col))
         
         return output
     
@@ -299,7 +340,7 @@ class pychess_board():
         for row in range(-2, 3):
             for col in range(-2, 3):
                 if(self.__check_move(knightRow, knightCol, knightRow + row, knightCol + col)):
-                    output.append(self.__new_move(knightRow + row, knightCol + col))
+                    output.append(self.__new_move(knightRow, knightCol, knightRow + row, knightCol + col))
         
         return output
     
@@ -311,30 +352,30 @@ class pychess_board():
             if(self.board[row][col] > 0):
                 
                 if(self.__check_move(row, col, row -1, col)):
-                    output.append(self.__new_move(row - 1, col))
+                    output.append(self.__new_move(row, col, row - 1, col))
                 
                 if(self.__check_move(row, col, row -1, col + 1)):
-                    output.append(self.__new_move(row - 1, col + 1))
+                    output.append(self.__new_move(row, col, row - 1, col + 1))
                 
                 if(self.__check_move(row, col, row -1, col - 1)):
-                    output.append(self.__new_move(row - 1, col - 1))
+                    output.append(self.__new_move(row, col, row - 1, col - 1))
                     
                 if(self.__check_move(row, col, row -2, col)):
-                    output.append(self.__new_move(row - 2, col))
+                    output.append(self.__new_move(row, col, row - 2, col))
                 
             else:
                 
                 if(self.__check_move(row, col, row + 1, col)):
-                    output.append(self.__new_move(row + 1, col))
+                    output.append(self.__new_move(row, col, row + 1, col))
                 
                 if(self.__check_move(row, col, row + 1, col + 1)):
-                    output.append(self.__new_move(row + 1, col + 1))
+                    output.append(self.__new_move(row, col, row + 1, col + 1))
                 
                 if(self.__check_move(row, col, row + 1, col - 1)):
-                    output.append(self.__new_move(row + 1, col - 1))
+                    output.append(self.__new_move(row, col, row + 1, col - 1))
                     
                 if(self.__check_move(row, col, row + 2, col)):
-                    output.append(self.__new_move(row + 2, col))
+                    output.append(self.__new_move(row, col, row + 2, col))
 
         
         return output
@@ -346,27 +387,27 @@ class pychess_board():
             
             # down right
             if(self.__check_move(queenRow, queenCol, queenRow + i, queenCol + i)):
-                output.append(self.__new_move(queenRow + i, queenCol + i))
+                output.append(self.__new_move(queenRow, queenCol, queenRow + i, queenCol + i))
         
             # up right
             if(self.__check_move(queenRow, queenCol, queenRow - i, queenCol + i)):
-                output.append(self.__new_move(queenRow - i, queenCol + i))
+                output.append(self.__new_move(queenRow, queenCol, queenRow - i, queenCol + i))
         
             # down left
             if(self.__check_move(queenRow, queenCol, queenRow + i, queenCol - i)):
-                output.append(self.__new_move(queenRow + i, queenCol - i))
+                output.append(self.__new_move(queenRow, queenCol, queenRow + i, queenCol - i))
         
             # up left
             if(self.__check_move(queenRow, queenCol, queenRow - i, queenCol - i)):
-                output.append(self.__new_move(queenRow - i, queenCol - i))
+                output.append(self.__new_move(queenRow, queenCol, queenRow - i, queenCol - i))
         
             # check current column
             if(self.__check_move(queenRow, queenCol, i, queenCol)):
-                output.append(self.__new_move(i, queenCol))
+                output.append(self.__new_move(queenRow, queenCol, i, queenCol))
             
             # check current row
             if(self.__check_move(queenRow, queenCol, queenRow, i)):
-                output.append(self.__new_move(queenRow, i))
+                output.append(self.__new_move(queenRow, queenCol, queenRow, i))
         
         
         return output
@@ -376,10 +417,10 @@ class pychess_board():
         
         for i in range(8):
             if(self.__check_move(rookRow, rookCol, i, rookCol)):
-                output.append(self.__new_move(i, rookCol))
+                output.append(self.__new_move(rookRow, rookCol, i, rookCol))
             
             if(self.__check_move(rookRow, rookCol,  rookRow, i)):
-                output.append(self.__new_move(rookRow, i))
+                output.append(self.__new_move(rookRow, rookCol, rookRow, i))
             
         
         return output
@@ -387,7 +428,7 @@ class pychess_board():
     
     
     
-    """methods to check if moves are legal. All methods return a boolean"""
+    """    methods to check if moves are legal. All methods return a boolean    """
     def __check_move(self, startRow, startCol, endRow, endCol):
 
         piece = self.board[startRow][startCol]
@@ -795,6 +836,30 @@ class pychess_board():
     
     
     
+    """        methods to end the game        """
+    def __end_game(self, message=""):
+        self.game_complete = True
+        
+        if(len(self.get_possible_moves()) == 0):
+            if(self.__king_in_danger()):
+                self.game_ending_message = "Checkmate. "
+                if(self.whiteToMove):
+                    self.game_ending_message += "Black has won!"
+                else:
+                    self.game_ending_message += "White has won!"
+            else:
+                self.game_ending_message = "Stalemate!"
+                
+        self.game_ending_message = message
+
+    def __check_game_complete(self):
+        if(len(self.get_possible_moves()) == 0):
+            self.__end_game()
+   
+       
+    
+    
+    
     """        misc. methods to help with tasks        """
     def __moving_forward_one(self, piece, rowDiff):
         return (rowDiff * piece < 0 and np.abs(rowDiff) == 1)
@@ -837,34 +902,13 @@ class pychess_board():
         self.enPassantable = temp
         self.resetEnPassant = False
     
-    def __new_move(self, row, col):
+    def __new_move(self, start_row, start_col, row, col):
         output = []
+        output.append(start_row)
+        output.append(start_col)
         output.append(row)
         output.append(col)
         return output
    
     def __promote(self, row, col, piece):
         self.board[row][col] = piece
-   
-    def __check_game_complete(self):
-        if(len(self.get_possible_moves()) == 0):
-            self.__end_game()
-            
-    def __end_game(self):
-        self.game_complete = True
-        if(len(self.get_possible_moves()) == 0):
-            if(self.__king_in_danger()):
-                self.game_ending_message = "Checkmate. "
-                if(self.whiteToMove):
-                    self.game_ending_message += "Black has won!"
-                else:
-                    self.game_ending_message += "White has won!"
-            else:
-                self.game_ending_message = "Stalemate!"
-        elif(self.draw_is_offered):
-            self.game_ending_message = "It is a draw."
-        else:
-            if(self.whiteToMove):
-                self.game_ending_message = "White has resigned. Black wins!"
-            else:
-                self.game_ending_message = "Black has resigned. White wins!"
