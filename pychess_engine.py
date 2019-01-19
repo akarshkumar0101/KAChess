@@ -1,13 +1,9 @@
 from pychess_board import pychess_board
 import math
-<<<<<<< HEAD
 import numpy
 from gametree_node import gametree_node
 import datetime
 from move_object import move_object
-=======
-from gametree import gametree
->>>>>>> branch 'master' of https://github.com/akarshkumar0101/KAChess
 
 class pychess_engine:
     """ This class provides an interface to play, uses the gametree module to pick best move """
