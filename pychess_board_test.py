@@ -1,6 +1,7 @@
 import unittest
 from pychess_board import pychess_board
 from numpy.f2py.auxfuncs import throw_error
+from move_object import move_object
 
 
 class pychess_board_test(unittest.TestCase):
@@ -17,13 +18,13 @@ class pychess_board_test(unittest.TestCase):
         # top right rook
         for i in range(8):
             for j in range(8):
-                cb.move(self.new_move(0, 7, i, j))
+                cb.move(move_object(0, 7, i, j))
                 self.assertBoardsEqual(cb, pychess_board())
-                cb.move(self.new_move(0, 0, i, j))
+                cb.move(move_object(0, 0, i, j))
                 self.assertBoardsEqual(cb, pychess_board())
-                cb.move(self.new_move(7, 0, i, j))
+                cb.move(move_object(7, 0, i, j))
                 self.assertBoardsEqual(cb, pychess_board())
-                cb.move(self.new_move(7, 7, i, j))
+                cb.move(move_object(7, 7, i, j))
                 self.assertBoardsEqual(cb, pychess_board())
         
     
@@ -33,13 +34,13 @@ class pychess_board_test(unittest.TestCase):
         # bottom left bishop
         for i in range(8):
             for j in range(8):
-                cb.move(self.new_move(7, 2, i, j))
+                cb.move(move_object(7, 2, i, j))
                 self.assertBoardsEqual(cb, pychess_board())
-                cb.move(self.new_move(0, 2, i, j))
+                cb.move(move_object(0, 2, i, j))
                 self.assertBoardsEqual(cb, pychess_board())
-                cb.move(self.new_move(0, 5, i, j))
+                cb.move(move_object(0, 5, i, j))
                 self.assertBoardsEqual(cb, pychess_board())
-                cb.move(self.new_move(7, 5, i, j))
+                cb.move(move_object(7, 5, i, j))
                 self.assertBoardsEqual(cb, pychess_board())
 
     
@@ -48,9 +49,9 @@ class pychess_board_test(unittest.TestCase):
 
         for i in range(8):
             for j in range(8):
-                cb.move(self.new_move(7, 4, i, j))
+                cb.move(move_object(7, 4, i, j))
                 self.assertBoardsEqual(cb, pychess_board())
-                cb.move(self.new_move(0, 4, i, j))
+                cb.move(move_object(0, 4, i, j))
                 self.assertBoardsEqual(cb, pychess_board())
         
     
@@ -60,9 +61,9 @@ class pychess_board_test(unittest.TestCase):
         # black queen
         for i in range(8):
             for j in range(8):
-                cb.move(self.new_move(0, 3, i, j))
+                cb.move(move_object(0, 3, i, j))
                 self.assertBoardsEqual(cb, pychess_board())
-                cb.move(self.new_move(7, 3, i, j))
+                cb.move(move_object(7, 3, i, j))
                 self.assertBoardsEqual(cb, pychess_board())
             
     
@@ -70,19 +71,19 @@ class pychess_board_test(unittest.TestCase):
         
         cb = pychess_board()
 
-        # test all black pawns to make sure they don't move (bc not their turn)
+        # test all black pawns to make sure they don't move_object (bc not their turn)
         pawnRow = 2 
         for pawnCol in range(8):
             for i in range(8):
                 for j in range(8):
-                    cb.move(self.new_move(pawnRow, pawnCol, i, j))
+                    cb.move(move_object(pawnRow, pawnCol, i, j))
                     self.assertBoardsEqual(cb, pychess_board())
         
         pawnRow = 6 
         for pawnCol in range(8):
             for toRow in range(8):
                 for toCol in range(8):
-                    cb.move(self.new_move(pawnRow, pawnCol, toRow, toCol))
+                    cb.move(move_object(pawnRow, pawnCol, toRow, toCol))
                     
                     if((toRow == 5 or toRow == 4) and pawnCol - toCol == 0):
                         self.assertBoardsEqual(cb, self.move_no_check(pawnRow, pawnCol, toRow, toCol, pychess_board()))
@@ -95,26 +96,26 @@ class pychess_board_test(unittest.TestCase):
         
         cb = pychess_board()
         
-        # black knights not supposed to move on first turn
+        # black knights not supposed to move_object on first turn
         for i in range(8):
             for j in range(8):
-                cb.move(self.new_move(0, 1, i, j))
+                cb.move(move_object(0, 1, i, j))
                 self.assertBoardsEqual(cb, pychess_board())
-                cb.move(self.new_move(0, 6, i, j))
+                cb.move(move_object(0, 6, i, j))
                 self.assertBoardsEqual(cb, pychess_board())
         
         # white knights
         for i in range(8):
             for j in range(8):
                 
-                cb.move(self.new_move(7, 1, i, j))
+                cb.move(move_object(7, 1, i, j))
                 if((i == 5 and j == 0) or(i == 5 and j == 2)):
                     self.assertBoardsEqual(cb, self.move_no_check(7, 1, i, j, pychess_board()))
                     cb = pychess_board()
                 else:
                     self.assertBoardsEqual(cb, pychess_board())
                 
-                cb.move(self.new_move(7, 6, i, j))
+                cb.move(move_object(7, 6, i, j))
                 if((i == 5 and j == 5) or (i == 5 and j == 7)):
                     self.assertBoardsEqual(cb, self.move_no_check(7, 6, i, j, pychess_board()))
                     cb = pychess_board()
@@ -134,7 +135,7 @@ class pychess_board_test(unittest.TestCase):
     
     # TODO write more complicated tests
     
-    # TODO test get moves
+    # TODO test get move_objects
     
     
     
@@ -147,27 +148,27 @@ class pychess_board_test(unittest.TestCase):
         cb = pychess_board()
         tester = pychess_board()
         
-        cb.move(self.new_move(6, 4, 4 ,4))
+        cb.move(move_object(6, 4, 4 ,4))
         tester = self.move_no_check(6, 4, 4, 4, tester)
         self.assertBoardsEqual(cb, tester)
         
-        cb.move(self.new_move(1, 4, 3 ,4))
+        cb.move(move_object(1, 4, 3 ,4))
         tester = self.move_no_check(1, 4, 3 ,4, tester)
         self.assertBoardsEqual(cb, tester)
         
-        cb.move(self.new_move(7, 6, 5 ,5))
+        cb.move(move_object(7, 6, 5 ,5))
         tester = self.move_no_check(7, 6, 5 ,5, tester)
         self.assertBoardsEqual(cb, tester)
         
-        cb.move(self.new_move(1, 1, 3, 1))
+        cb.move(move_object(1, 1, 3, 1))
         tester = self.move_no_check(1, 1, 3, 1, tester)
         self.assertBoardsEqual(cb, tester)
         
-        cb.move(self.new_move(5, 5, 4 ,3))
+        cb.move(move_object(5, 5, 4 ,3))
         tester = self.move_no_check(5, 5, 4 ,3, tester)
         self.assertBoardsEqual(cb, tester)
         
-        cb.move(self.new_move(3, 4, 4, 3))
+        cb.move(move_object(3, 4, 4, 3))
         tester = self.move_no_check(3, 4, 4, 3, tester)
         self.assertBoardsEqual(cb, tester)
     
@@ -179,214 +180,214 @@ class pychess_board_test(unittest.TestCase):
         # uses en passant
         
         # e4
-        cb.move(self.new_move(6, 4, 4 ,4))
+        cb.move(move_object(6, 4, 4 ,4))
         tester = self.move_no_check(6, 4, 4, 4, tester)
         self.assertBoardsEqual(cb, tester)
         
         # e5
-        cb.move(self.new_move(1, 4, 3 ,4))
+        cb.move(move_object(1, 4, 3 ,4))
         tester = self.move_no_check(1, 4, 3 ,4, tester)
         self.assertBoardsEqual(cb, tester)
         
         # Nf3
-        cb.move(self.new_move(7, 6, 5 ,5))
+        cb.move(move_object(7, 6, 5 ,5))
         tester = self.move_no_check(7, 6, 5 ,5, tester)
         self.assertBoardsEqual(cb, tester)
         
         # Nc6
-        cb.move(self.new_move(0, 1, 2, 2))
+        cb.move(move_object(0, 1, 2, 2))
         tester = self.move_no_check(0, 1, 2, 2, tester)
         self.assertBoardsEqual(cb, tester)
         
         # d4
-        cb.move(self.new_move(6, 3, 4 ,3))
+        cb.move(move_object(6, 3, 4 ,3))
         tester = self.move_no_check(6, 3, 4 ,3, tester)
         self.assertBoardsEqual(cb, tester)
         
         # exd4
-        cb.move(self.new_move(3, 4, 4, 3))
+        cb.move(move_object(3, 4, 4, 3))
         tester = self.move_no_check(3, 4, 4, 3, tester)
         self.assertBoardsEqual(cb, tester)
         
         # Nxd4
-        cb.move(self.new_move(5 ,5, 4, 3))
+        cb.move(move_object(5 ,5, 4, 3))
         tester = self.move_no_check(5 ,5, 4, 3, tester)
         self.assertBoardsEqual(cb, tester)
         
         # Nf6
-        cb.move(self.new_move(0, 6, 2, 5))
+        cb.move(move_object(0, 6, 2, 5))
         tester = self.move_no_check(0, 6, 2, 5, tester)
         self.assertBoardsEqual(cb, tester)
         
         # Nxc6
-        cb.move(self.new_move(4, 3, 2, 2))
+        cb.move(move_object(4, 3, 2, 2))
         tester = self.move_no_check(4, 3, 2, 2, tester)
         self.assertBoardsEqual(cb, tester)
         
         # bxc6
-        cb.move(self.new_move(1,1,2,2))
+        cb.move(move_object(1,1,2,2))
         tester = self.move_no_check(1,1,2,2, tester)
         self.assertBoardsEqual(cb, tester)
         
         # e5
-        cb.move(self.new_move(4,4,3,4))
+        cb.move(move_object(4,4,3,4))
         tester = self.move_no_check(4,4,3,4, tester)
         self.assertBoardsEqual(cb, tester)
         
         # Qe7
-        cb.move(self.new_move(0,3,1,4))
+        cb.move(move_object(0,3,1,4))
         tester = self.move_no_check(0,3,1,4, tester)
         self.assertBoardsEqual(cb, tester)
         
         # Qe2
-        cb.move(self.new_move(7,3,6,4))
+        cb.move(move_object(7,3,6,4))
         tester = self.move_no_check(7,3,6,4, tester)
         self.assertBoardsEqual(cb, tester)
         
         # Nd5
-        cb.move(self.new_move(2,5,3,3))
+        cb.move(move_object(2,5,3,3))
         tester = self.move_no_check(2,5,3,3, tester)
         self.assertBoardsEqual(cb, tester)
         
         # c4
-        cb.move(self.new_move(6,2,4,2))
+        cb.move(move_object(6,2,4,2))
         tester = self.move_no_check(6,2,4,2, tester)
         self.assertBoardsEqual(cb, tester)
         
         # Nb6
-        cb.move(self.new_move(3,3,2,1))
+        cb.move(move_object(3,3,2,1))
         tester = self.move_no_check(3,3,2,1, tester)
         self.assertBoardsEqual(cb, tester)
         
         # Nc3
-        cb.move(self.new_move(7,1,5,2))
+        cb.move(move_object(7,1,5,2))
         tester = self.move_no_check(7,1,5,2, tester)
         self.assertBoardsEqual(cb, tester)
         
         # Qe6
-        cb.move(self.new_move(1,4,2,4))
+        cb.move(move_object(1,4,2,4))
         tester = self.move_no_check(1,4,2,4, tester)
         self.assertBoardsEqual(cb, tester)
         
         # Qe4
-        cb.move(self.new_move(6,4,4,4))
+        cb.move(move_object(6,4,4,4))
         tester = self.move_no_check(6,4,4,4, tester)
         self.assertBoardsEqual(cb, tester)
         
         # Bb4
-        cb.move(self.new_move(0,5,4,1))
+        cb.move(move_object(0,5,4,1))
         tester = self.move_no_check(0,5,4,1, tester)
         self.assertBoardsEqual(cb, tester)
         
         # Bd2
-        cb.move(self.new_move(7,2,6,3))
+        cb.move(move_object(7,2,6,3))
         tester = self.move_no_check(7,2,6,3, tester)
         self.assertBoardsEqual(cb, tester)
         
         # Bb7
-        cb.move(self.new_move(0,2,1,1))
+        cb.move(move_object(0,2,1,1))
         tester = self.move_no_check(0,2,1,1, tester)
         self.assertBoardsEqual(cb, tester)
         
         # Bd3
-        cb.move(self.new_move(7,5,5,3))
+        cb.move(move_object(7,5,5,3))
         tester = self.move_no_check(7,5,5,3, tester)
         self.assertBoardsEqual(cb, tester)
         
         # 0-0-0
-        cb.move(self.new_move(0,4,0,2))
+        cb.move(move_object(0,4,0,2))
         tester = self.move_no_check(0,4,0,2, tester)
         tester = self.move_no_check(0,0,0,3, tester)
         self.assertBoardsEqual(cb, tester)
         
         # 0-0-0
-        cb.move(self.new_move(7,4,7,2))
+        cb.move(move_object(7,4,7,2))
         tester = self.move_no_check(7,4,7,2, tester)
         tester = self.move_no_check(7,0,7,3, tester)
         self.assertBoardsEqual(cb, tester)
         
         # c5
-        cb.move(self.new_move(2,2,3,2))
+        cb.move(move_object(2,2,3,2))
         tester = self.move_no_check(2,2,3,2, tester)
         self.assertBoardsEqual(cb, tester)
         
         # Qe2
-        cb.move(self.new_move(4,4,6,4))
+        cb.move(move_object(4,4,6,4))
         tester = self.move_no_check(4,4,6,4, tester)
         self.assertBoardsEqual(cb, tester)
         
         # Re8
-        cb.move(self.new_move(0,7,0,4))
+        cb.move(move_object(0,7,0,4))
         tester = self.move_no_check(0,7,0,4, tester)
         self.assertBoardsEqual(cb, tester)
         
         # f4
-        cb.move(self.new_move(6,5,4,5))
+        cb.move(move_object(6,5,4,5))
         tester = self.move_no_check(6,5,4,5, tester)
         self.assertBoardsEqual(cb, tester)
         
         # d6
-        cb.move(self.new_move(1,3,2,3))
+        cb.move(move_object(1,3,2,3))
         tester = self.move_no_check(1,3,2,3, tester)
         self.assertBoardsEqual(cb, tester)
         
         # a3
-        cb.move(self.new_move(6,0,5,0))
+        cb.move(move_object(6,0,5,0))
         tester = self.move_no_check(6,0,5,0, tester)
         self.assertBoardsEqual(cb, tester)
         
         # Bxc3
-        cb.move(self.new_move(4,1,5,2))
+        cb.move(move_object(4,1,5,2))
         tester = self.move_no_check(4,1,5,2, tester)
         self.assertBoardsEqual(cb, tester)
         
         # Bxc3
-        cb.move(self.new_move(6,3,5,2))
+        cb.move(move_object(6,3,5,2))
         tester = self.move_no_check(6,3,5,2, tester)
         self.assertBoardsEqual(cb, tester)
         
         # g6
-        cb.move(self.new_move(1,6,2,6))
+        cb.move(move_object(1,6,2,6))
         tester = self.move_no_check(1,6,2,6, tester)
         self.assertBoardsEqual(cb, tester)
         
         # Rhf1
-        cb.move(self.new_move(7,7,7,5))
+        cb.move(move_object(7,7,7,5))
         tester = self.move_no_check(7,7,7,5, tester)
         self.assertBoardsEqual(cb, tester)
         
         # Na4
-        cb.move(self.new_move(2,1,4,0))
+        cb.move(move_object(2,1,4,0))
         tester = self.move_no_check(2,1,4,0, tester)
         self.assertBoardsEqual(cb, tester)
         
         # Ba5
-        cb.move(self.new_move(5,2,3,0))
+        cb.move(move_object(5,2,3,0))
         tester = self.move_no_check(5,2,3,0, tester)
         self.assertBoardsEqual(cb, tester)
         
         # dxe5
-        cb.move(self.new_move(2,3,3,4))
+        cb.move(move_object(2,3,3,4))
         tester = self.move_no_check(2,3,3,4, tester)
         self.assertBoardsEqual(cb, tester)
         
         # fxe5
-        cb.move(self.new_move(4,5,3,4))
+        cb.move(move_object(4,5,3,4))
         tester = self.move_no_check(4,5,3,4, tester)
         self.assertBoardsEqual(cb, tester)
         
         # f5
-        cb.move(self.new_move(1,5,3,5))
+        cb.move(move_object(1,5,3,5))
         tester = self.move_no_check(1,5,3,5, tester)
         self.assertBoardsEqual(cb, tester)
 
         # exf6!
-        cb.move(self.new_move(3,4,2,5))
+        cb.move(move_object(3,4,2,5))
         tester = self.move_no_check(3,4,2,5, tester)
         tester = self.erase_square(3,5, tester) # fill 3,5, with empty square
         self.assertBoardsEqual(cb, tester)
     
-    # moves piece on for easy testing
+    # move_objects piece on for easy testing
     
     
     def test_simple_game_3(self):
@@ -450,6 +451,12 @@ class pychess_board_test(unittest.TestCase):
         cb, tester = self.Test_move(cb, tester, "c2,c4")
     
     
+    def test_simple_game_5(self):
+        cb = pychess_board()
+        tester = pychess_board()
+        
+        cb, tester = self.Test_move(cb, tester, "e2,e4")
+        cb, tester = self.Test_move(cb, tester, "h7,h6")
     
     
     """                                                                """
@@ -493,7 +500,7 @@ class pychess_board_test(unittest.TestCase):
 
         for i in range(8):
             for j in range(8):
-                self.Test_false_move(cb, tester, self.new_move(3,3,i,j))
+                self.Test_false_move(cb, tester, move_object(3,3,i,j))
         
     
     def test_king_safety_2(self):
@@ -533,17 +540,17 @@ class pychess_board_test(unittest.TestCase):
         for i in range(8):
             for j in range(8):
                 if(i != 3 or j != 4):
-                    self.Test_false_move(cb, tester, self.new_move(3,3,i,j))
-        cb, tester = self.Test_move(cb, tester, self.new_move(3,3,3,4))
-        cb, tester = self.Test_move(cb, tester, self.new_move(4,0,4,1)) # so correct turn
+                    self.Test_false_move(cb, tester, move_object(3,3,i,j))
+        cb, tester = self.Test_move(cb, tester, move_object(3,3,3,4))
+        cb, tester = self.Test_move(cb, tester, move_object(4,0,4,1)) # so correct turn
         
         for i in range(8):
             for j in range(8):
                 if(i != 3 or j != 3):
-                    self.Test_false_move(cb, tester, self.new_move(3,4,i,j))
+                    self.Test_false_move(cb, tester, move_object(3,4,i,j))
                 
         
-        cb, tester = self.Test_move(cb, tester, self.new_move(3,4,3,3))
+        cb, tester = self.Test_move(cb, tester, move_object(3,4,3,3))
         
         
     def test_king_safety_3(self):
@@ -579,7 +586,7 @@ class pychess_board_test(unittest.TestCase):
         output = b.get_board()
         piece = output[startRow][startCol]
         if(piece == 0):
-            print("cannot move empty square: row " + str(startRow) + ", col "+str(startCol) )
+            print("cannot move_object empty square: row " + str(startRow) + ", col "+str(startCol) )
             print(b.to_string())
             raise ArgumentError
         output[startRow][startCol] = 0
@@ -606,18 +613,9 @@ class pychess_board_test(unittest.TestCase):
                     raise AssertionError
                     
     
-    def new_move(self, startRow, startCol, endRow, endCol):
-        output = []
-        output.append(startRow)
-        output.append(startCol)
-        output.append(endRow)
-        output.append(endCol)
-        return output
-    
-    
-    def Test_move(self, chess_board, tester_board, move): # startsqr, comma, endsqr ex: d2,d4
+    def Test_move(self, chess_board, tester_board, move_string): # startsqr, comma, endsqr ex: d2,d4
         
-        startRow, startCol, endRow, endCol = self.parse(move)
+        startRow, startCol, endRow, endCol = self.parse(move_string)
         
         piece = chess_board.board[startRow][startCol]
         
@@ -627,19 +625,18 @@ class pychess_board_test(unittest.TestCase):
         elif(piece < 0):
             self.move_white(chess_board, tester_board)
         
-        # move the piece
-        # move is changing tester_board too
-        chess_board.move(self.new_move(startRow,startCol,endRow,endCol))
+        # move_object the piece
+        # move_object is changing tester_board too
+        chess_board.move(move_object(startRow, startCol, endRow, endCol))
         tester_board = self.move_no_check(startRow,startCol,endRow,endCol, tester_board)
         self.assertBoardsEqual(chess_board, tester_board)
         
         return chess_board, tester_board
      
      
-    def Test_false_move(self, chess_board, tester_board, move):
-        # move the piece
-        startRow,startCol,endRow,endCol = self.parse(move)
-        chess_board.move(self.new_move(startRow,startCol,endRow,endCol))
+    def Test_false_move(self, chess_board, tester_board, a_move):
+        # move_object the piece
+        chess_board.move(a_move)
         self.assertBoardsEqual(chess_board, tester_board)
         
      
@@ -666,15 +663,15 @@ class pychess_board_test(unittest.TestCase):
             return 7
     
     
-    def parse(self, move):
-        if(isinstance(move, list)): # move is a list
-            startRow = move[0]
-            startCol = move[1]
-            endRow   = move[2]
-            endCol   = move[3] 
-        elif(isinstance(move, str)): # move is a string
-            # can't be used for compound moves
-            squares = move.split(",")
+    def parse(self, a_move):
+        if(isinstance(a_move, move_object)): # move_object is a list
+            startRow = a_move.start_row
+            startCol = a_move.start_col
+            endRow   = a_move.end_row
+            endCol   = a_move.end_col
+        elif(isinstance(a_move, str)): # move_object is a string
+            # can't be used for compound move_objects
+            squares = a_move.split(",")
             
             startRow = self.num_to_square(squares[0][1])
             startCol = self.letter_to_square(squares[0][0])
@@ -684,21 +681,21 @@ class pychess_board_test(unittest.TestCase):
         return startRow, startCol, endRow, endCol
     
     
-    def move_white(self, cb, tester): # try to move every piece of white (doesn't move)
+    def move_white(self, cb, tester): # try to move_object every piece of white (doesn't move_object)
         for startRow in range(8):
             for startCol in range(8):
                 if(tester.board[startRow][startCol] > 0):
                     for endRow in range(8):
                         for endCol in range(8):
-                            cb.move(self.new_move(startRow,startCol,endRow,endCol))
+                            cb.move(move_object(startRow,startCol,endRow,endCol))
                             self.assertBoardsEqual(cb, tester)
     
     
-    def move_black(self, cb, tester): # try to move every piece of black (doesn't move)
+    def move_black(self, cb, tester): # try to move_object every piece of black (doesn't move_object)
         for startRow in range(8):
             for startCol in range(8):
                 if(tester.board[startRow][startCol] < 0):
                     for endRow in range(8):
                         for endCol in range(8):
-                            cb.move(self.new_move(startRow,startCol,endRow,endCol))
+                            cb.move(move_object(startRow,startCol,endRow,endCol))
                             self.assertBoardsEqual(cb, tester)

@@ -1,5 +1,6 @@
 import numpy as np
 import copy
+from move_object import move_object
 
 class pychess_board():
     """ This class provides chessboard logic """
@@ -79,13 +80,13 @@ class pychess_board():
         
         
         
-        
     """                                               """
     """                                               """
     """                PUBLIC METHODS                 """
     """                                               """
     """                                               """
-        
+    
+    """ TODO optimize """
     def get_possible_moves(self): # returns a list of all possible moves. each move is a list [current_row, current_col, end_row, end_col]
         output = []
         for row in range(8):
@@ -93,20 +94,15 @@ class pychess_board():
                 if((self.board[row][col] > 0) == self.whiteToMove):
                     output.extend(self.__get_moves(row, col))
         
-        assert(len(output) > 0)
         return output
      
      
-    def move(self, move): # move is list of form [startRow, startCol, endRow, endCol]
+    def move(self, move): # move is move object
         # returns true if move is completed
-        startRow = move[0]
-        startCol = move[1]
-        endRow   = move[2]
-        endCol   = move[3]
-        
+
         # if valid move
-        if((not self.game_complete) and self.__check_move(startRow, startCol, endRow, endCol)):
-            self.__move_piece(startRow, startCol, endRow, endCol)
+        if(not self.game_complete and self.__check_move(move)):
+            self.__move_piece(move)
             self.__check_game_complete() # TODO debug
             return True
         
@@ -196,8 +192,7 @@ class pychess_board():
             elif(self.white_to_move() and draw_is_offered[0]):
                 self.__end_game("It's a draw.")
         
-        
-        
+       
     """                                               """
     """                                               """
     """                PRIVATE METHODS                """
@@ -207,7 +202,13 @@ class pychess_board():
     
     
     """            methods to move pieces             """
-    def __move_piece(self, startRow, startCol, endRow, endCol): # TODO check the logic 
+    def __move_piece(self, a_move): # TODO check the logic 
+        
+        startRow = a_move.start_row
+        startCol = a_move.start_col
+        endRow   = a_move.end_row
+        endCol   = a_move.end_col
+        
         
         # reset enPassantable if reset flag is set (this should always be first)
         if(self.resetEnPassant):
@@ -220,7 +221,7 @@ class pychess_board():
         if(piece == 6):
             
             if(startCol == 4):
-                if(endCol == 7):
+                if(endCol == 6):
                     self.__castle("white", "kingside")
                 elif(endCol == 2):
                     self.__castle("white", "Queenside")
@@ -231,7 +232,7 @@ class pychess_board():
         elif(piece == -6):
             
             if(startCol == 4):
-                if(endCol == 7):
+                if(endCol == 6):
                     self.__castle("black", "kingside")
                 elif(endCol == 2):
                     self.__castle("black", "Queenside")
@@ -241,9 +242,7 @@ class pychess_board():
                 
         elif(piece == 1):
             
-            if(endRow == 0):
-                self.__promote(endRow, endCol, 5)
-            elif(not self.__out_of_bounds(endRow + 1, endCol) and self.__is_enemy_square(piece, endRow + 1, endCol)):
+            if(not self.__out_of_bounds(endRow + 1, endCol) and self.__is_enemy_square(piece, endRow + 1, endCol) and self.enPassantable[0] == endRow + 1 and self.enPassantable[1] == endCol):
                 self.__en_passant(endRow + 1, endCol)
                 
             elif(startRow == 6 and endRow == 4):
@@ -251,9 +250,7 @@ class pychess_board():
             
         elif(piece == -1):
             
-            if(endRow == 8):
-                self.__promote(endRow, endCol, -5)
-            elif(not self.__out_of_bounds(endRow - 1, endCol) and self.__is_enemy_square(piece, endRow - 1, endCol)):
+            if(not self.__out_of_bounds(endRow - 1, endCol) and self.__is_enemy_square(piece, endRow - 1, endCol) and self.enPassantable[0] == endRow - 1 and self.enPassantable[1] == endCol):
                 self.__en_passant(endRow - 1, endCol)
                 
             elif(startRow == 1 and endRow == 3):
@@ -278,11 +275,18 @@ class pychess_board():
         
         self.board[startRow][startCol] = 0 # move piece
         self.board[endRow][endCol] = piece
+        
+        if(piece == 1 and endRow == 0 and startRow == 1):
+            self.__promote(endRow, endCol, a_move.promotion)
+        elif(piece == -1 and endRow == 7 and startRow == 6):
+            self.__promote(endRow, endCol, -1 * a_move.promotion)
+            
         self.whiteToMove = not self.whiteToMove
+        
 
-    def __move_piece_no_check(self, startRow, startCol, endRow, endCol): # returns a new pychess_board object with the piece moved regardless if it is a legal move
+    def __move_piece_no_check(self, a_move): # returns a new pychess_board object with the piece moved regardless if it is a legal move
         output = self.clone() # clone is redundant but for safety
-        output.__move_piece(startRow, startCol, endRow, endCol)
+        output.__move_piece(a_move)
         return output
     
                     
@@ -310,17 +314,17 @@ class pychess_board():
     def __get_moves_bishop(self, row, col): # returns a list of possible moves. each move is a list [end_row, end_col]
         output = []
         for i in range(8):
-            if(self.__check_move(row, col, row + i, col + i)):
-                output.append(self.__new_move(row, col, row + i, col + i))
+            if(self.__check_move(move_object(row, col, row + i, col + i))):
+                output.append(move_object(row, col, row + i, col + i))
             
-            if(self.__check_move(row, col, row - i, col + i)):
-                output.append(self.__new_move(row, col, row - i, col + i))
+            if(self.__check_move(move_object(row, col, row - i, col + i))):
+                output.append(move_object(row, col, row - i, col + i))
             
-            if(self.__check_move(row, col, row + i, col - i)):
-                output.append(self.__new_move(row, col, row + i, col - i))
+            if(self.__check_move(move_object(row, col, row + i, col - i))):
+                output.append(move_object(row, col, row + i, col - i))
             
-            if(self.__check_move(row, col, row - i, col - i)):
-                output.append(self.__new_move(row, col, row - i, col - i))
+            if(self.__check_move(move_object(row, col, row - i, col - i))):
+                output.append(move_object(row, col, row - i, col - i))
         
         return output
     
@@ -329,8 +333,22 @@ class pychess_board():
         
         for row in range(-1, 2):
             for col in range(-1, 2):
-                if(self.__check_move(kingRow, kingCol, kingRow + row, kingCol + col)):
-                    output.append(self.__new_move(kingRow, kingCol, kingRow + row,kingCol + col))
+                a_move = move_object(kingRow, kingCol, kingRow + row, kingCol + col)
+                if(self.__check_move(a_move)):
+                    output.append(a_move)
+        
+        if(kingCol == 4 and (kingRow == 7 or kingRow == 0)):
+            
+            # castling kingside
+            a_move = move_object(kingRow, kingCol, kingRow, kingCol + 2)
+            if(self.__check_move(a_move)):
+                    output.append(a_move)
+                    
+            # queenside
+            a_move = move_object(kingRow, kingCol, kingRow, kingCol - 2)
+            if(self.__check_move(a_move)):
+                    output.append(a_move)
+        
         
         return output
     
@@ -339,43 +357,73 @@ class pychess_board():
         
         for row in range(-2, 3):
             for col in range(-2, 3):
-                if(self.__check_move(knightRow, knightCol, knightRow + row, knightCol + col)):
-                    output.append(self.__new_move(knightRow, knightCol, knightRow + row, knightCol + col))
+                if(self.__check_move(move_object(knightRow, knightCol, knightRow + row, knightCol + col))):
+                    output.append(move_object(knightRow, knightCol, knightRow + row, knightCol + col))
         
         return output
     
-    def __get_moves_pawn(self, row, col):
+    def __get_moves_pawn(self, row, col): # TODO fix promotion
         output = []
         
         # TODO make pawn moves more efficient
         if(not self.__out_of_bounds(row, col)):
-            if(self.board[row][col] > 0):
+            if(self.board[row][col] > 0): # white
+               
+                if(row-1 == 0): # for promotion
+                        
+                    if(self.__check_move(move_object(row, col, row - 1, col, 5))):
+                        for i in range(2,6):
+                            output.append(move_object(row, col, row - 1, col, 5))   
+                                             
+                    if(self.__check_move(move_object(row, col, row - 1, col + 1, 5))):
+                        for i in range(2,6):
+                            output.append(move_object(row, col, row - 1, col + 1, i))      
+                                          
+                    if(self.__check_move(move_object(row, col, row - 1, col - 1, 5))):
+                        for i in range(2,6):
+                            output.append(move_object(row, col, row - 1, col - 1, i))                        
                 
-                if(self.__check_move(row, col, row -1, col)):
-                    output.append(self.__new_move(row, col, row - 1, col))
+                else:
                 
-                if(self.__check_move(row, col, row -1, col + 1)):
-                    output.append(self.__new_move(row, col, row - 1, col + 1))
-                
-                if(self.__check_move(row, col, row -1, col - 1)):
-                    output.append(self.__new_move(row, col, row - 1, col - 1))
+                    if(self.__check_move(move_object(row, col, row -1, col))):
+                            output.append(move_object(row, col, row - 1, col))
                     
-                if(self.__check_move(row, col, row -2, col)):
-                    output.append(self.__new_move(row, col, row - 2, col))
-                
-            else:
-                
-                if(self.__check_move(row, col, row + 1, col)):
-                    output.append(self.__new_move(row, col, row + 1, col))
-                
-                if(self.__check_move(row, col, row + 1, col + 1)):
-                    output.append(self.__new_move(row, col, row + 1, col + 1))
-                
-                if(self.__check_move(row, col, row + 1, col - 1)):
-                    output.append(self.__new_move(row, col, row + 1, col - 1))
+                    if(self.__check_move(move_object(row, col, row -1, col + 1))):
+                        output.append(move_object(row, col, row - 1, col + 1))
                     
-                if(self.__check_move(row, col, row + 2, col)):
-                    output.append(self.__new_move(row, col, row + 2, col))
+                    if(self.__check_move(move_object(row, col, row -1, col - 1))):
+                        output.append(move_object(row, col, row - 1, col - 1))
+                    
+                    if(self.__check_move(move_object(row, col, row -2, col))):
+                        output.append(move_object(row, col, row - 2, col))
+                
+            else: # black
+                
+                if(row+1 == 7): # for promotion
+                    if(self.__check_move(move_object(row, col, row + 1, col, 5))):
+                        for i in range(2,6):
+                            output.append(move_object(row, col, row + 1, col, i))   
+                                             
+                    if(self.__check_move(move_object(row, col, row + 1, col + 1, 5))):
+                        for i in range(2,6):
+                            output.append(move_object(row, col, row + 1, col + 1, i))      
+                                          
+                    if(self.__check_move(move_object(row, col, row + 1, col - 1, 5))):
+                        for i in range(2,6):
+                            output.append(move_object(row, col, row + 1, col - 1, i))                        
+                
+                else:
+                    if(self.__check_move(move_object(row, col, row + 1, col))):
+                            output.append(move_object(row, col, row + 1, col))
+                    
+                    if(self.__check_move(move_object(row, col, row + 1, col + 1))):
+                        output.append(move_object(row, col, row + 1, col + 1))
+                    
+                    if(self.__check_move(move_object(row, col, row + 1, col - 1))):
+                        output.append(move_object(row, col, row + 1, col - 1))
+                        
+                    if(self.__check_move(move_object(row, col, row + 2, col))):
+                        output.append(move_object(row, col, row + 2, col))
 
         
         return output
@@ -386,28 +434,28 @@ class pychess_board():
         for i in range(8):
             
             # down right
-            if(self.__check_move(queenRow, queenCol, queenRow + i, queenCol + i)):
-                output.append(self.__new_move(queenRow, queenCol, queenRow + i, queenCol + i))
+            if(self.__check_move(move_object(queenRow, queenCol, queenRow + i, queenCol + i))):
+                output.append(move_object(queenRow, queenCol, queenRow + i, queenCol + i))
         
             # up right
-            if(self.__check_move(queenRow, queenCol, queenRow - i, queenCol + i)):
-                output.append(self.__new_move(queenRow, queenCol, queenRow - i, queenCol + i))
+            if(self.__check_move(move_object(queenRow, queenCol, queenRow - i, queenCol + i))):
+                output.append(move_object(queenRow, queenCol, queenRow - i, queenCol + i))
         
             # down left
-            if(self.__check_move(queenRow, queenCol, queenRow + i, queenCol - i)):
-                output.append(self.__new_move(queenRow, queenCol, queenRow + i, queenCol - i))
+            if(self.__check_move(move_object(queenRow, queenCol, queenRow + i, queenCol - i))):
+                output.append(move_object(queenRow, queenCol, queenRow + i, queenCol - i))
         
             # up left
-            if(self.__check_move(queenRow, queenCol, queenRow - i, queenCol - i)):
-                output.append(self.__new_move(queenRow, queenCol, queenRow - i, queenCol - i))
+            if(self.__check_move(move_object(queenRow, queenCol, queenRow - i, queenCol - i))):
+                output.append(move_object(queenRow, queenCol, queenRow - i, queenCol - i))
         
             # check current column
-            if(self.__check_move(queenRow, queenCol, i, queenCol)):
-                output.append(self.__new_move(queenRow, queenCol, i, queenCol))
+            if(self.__check_move(move_object(queenRow, queenCol, i, queenCol))):
+                output.append(move_object(queenRow, queenCol, i, queenCol))
             
             # check current row
-            if(self.__check_move(queenRow, queenCol, queenRow, i)):
-                output.append(self.__new_move(queenRow, queenCol, queenRow, i))
+            if(self.__check_move(move_object(queenRow, queenCol, queenRow, i))):
+                output.append(move_object(queenRow, queenCol, queenRow, i))
         
         
         return output
@@ -416,11 +464,11 @@ class pychess_board():
         output = []
         
         for i in range(8):
-            if(self.__check_move(rookRow, rookCol, i, rookCol)):
-                output.append(self.__new_move(rookRow, rookCol, i, rookCol))
+            if(self.__check_move(move_object(rookRow, rookCol, i, rookCol))):
+                output.append(move_object(rookRow, rookCol, i, rookCol))
             
-            if(self.__check_move(rookRow, rookCol,  rookRow, i)):
-                output.append(self.__new_move(rookRow, rookCol, rookRow, i))
+            if(self.__check_move(move_object(rookRow, rookCol,  rookRow, i))):
+                output.append(move_object(rookRow, rookCol, rookRow, i))
             
         
         return output
@@ -429,8 +477,13 @@ class pychess_board():
     
     
     """    methods to check if moves are legal. All methods return a boolean    """
-    def __check_move(self, startRow, startCol, endRow, endCol):
+    def __check_move(self, a_move):
 
+        startRow = a_move.start_row
+        startCol = a_move.start_col
+        endRow   = a_move.end_row
+        endCol   = a_move.end_col
+        
         piece = self.board[startRow][startCol]
         
         # if incorrect turn
@@ -453,26 +506,32 @@ class pychess_board():
         
         
         # if king is in danger after move is completed
-        turnComplete = self.clone().__move_piece_no_check(startRow, startCol, endRow, endCol)
+        turnComplete = self.clone().__move_piece_no_check(a_move)
         if(turnComplete.__king_in_danger(False)):
             return False
         
         if(piece == 1 or piece == -1):
-            return self.__check_move_pawn(startRow, startCol, endRow, endCol)
+            return self.__check_move_pawn(a_move)
         elif(piece == 2 or piece == -2):
-            return self.__check_move_rook(startRow, startCol, endRow, endCol)
+            return self.__check_move_rook(a_move)
         elif(piece == 3 or piece == -3):
-            return self.__check_move_knight(startRow, startCol, endRow, endCol)
+            return self.__check_move_knight(a_move)
         elif(piece == 4 or piece == -4):
-            return self.__check_move_bishop(startRow, startCol, endRow, endCol)
+            return self.__check_move_bishop(a_move)
         elif(piece == 5 or piece == -5):
-            return self.__check_move_queen(startRow, startCol, endRow, endCol)
+            return self.__check_move_queen(a_move)
         elif(piece == 6 or piece == -6):
-            return self.__check_move_king(startRow, startCol, endRow, endCol)
+            return self.__check_move_king(a_move)
         else:
             return False
     
-    def __check_move_bishop(self, startRow, startCol, endRow, endCol):
+    def __check_move_bishop(self, a_move):
+        
+        startRow = a_move.start_row
+        startCol = a_move.start_col
+        endRow   = a_move.end_row
+        endCol   = a_move.end_col
+        
         rowDiff = endRow - startRow
         colDiff = endCol - startCol
         
@@ -483,7 +542,13 @@ class pychess_board():
         
         return self.__is_empty_between(startRow, startCol, endRow, endCol)
     
-    def __check_move_king(self, startRow, startCol, endRow, endCol):
+    def __check_move_king(self, a_move):
+        
+        startRow = a_move.start_row
+        startCol = a_move.start_col
+        endRow   = a_move.end_row
+        endCol   = a_move.end_col
+        
         rowDiff = endRow - startRow
         colDiff = endCol - startCol
         piece = self.board[startRow][startCol]
@@ -497,9 +562,9 @@ class pychess_board():
             # castling kingside
             if(endCol == 6 and self.__is_empty_between(startRow, startCol, endRow, 7) and self.__is_safe_between(startRow, startCol, endRow, 7)):
                 
-                if(piece > 0 and canCastle[0] and self.board[7][7] == 2):
+                if(piece > 0 and self.canCastle[0] and self.board[7][7] == 2):
                     return True
-                elif(piece < 0 and canCastle[2] and self.board[0][7] == -2):
+                elif(piece < 0 and self.canCastle[2] and self.board[0][7] == -2):
                     return True
                 
             # castling queenSide
@@ -513,15 +578,26 @@ class pychess_board():
         
         return False
     
-    def __check_move_knight(self, startRow, startCol, endRow, endCol):
+    def __check_move_knight(self, a_move):
+        startRow = a_move.start_row
+        startCol = a_move.start_col
+        endRow   = a_move.end_row
+        endCol   = a_move.end_col
+        
         rowDiff = endRow - startRow
         colDiff = endCol - startCol
     
         return np.abs(rowDiff*colDiff) == 2
     
-    def __check_move_pawn(self, startRow, startCol, endRow, endCol):
+    def __check_move_pawn(self, a_move):
+        
+        startRow = a_move.start_row
+        startCol = a_move.start_col
+        endRow   = a_move.end_row
+        endCol   = a_move.end_col
         
         piece = self.board[startRow][startCol]
+        
         rowDiff = endRow - startRow
         colDiff = endCol - startCol
         
@@ -551,7 +627,13 @@ class pychess_board():
         
         return False
     
-    def __check_move_queen(self, startRow, startCol, endRow, endCol):
+    def __check_move_queen(self, a_move):
+        
+        startRow = a_move.start_row
+        startCol = a_move.start_col
+        endRow   = a_move.end_row
+        endCol   = a_move.end_col
+        
         rowDiff = endRow - startRow
         colDiff = endCol - startCol
         
@@ -562,7 +644,13 @@ class pychess_board():
         
         return self.__is_empty_between(startRow, startCol, endRow, endCol)
     
-    def __check_move_rook(self, startRow, startCol, endRow, endCol):
+    def __check_move_rook(self, a_move):
+        
+        startRow = a_move.start_row
+        startCol = a_move.start_col
+        endRow   = a_move.end_row
+        endCol   = a_move.end_col
+        
         rowDiff = endRow - startRow
         colDiff = endCol - startCol
         
@@ -593,9 +681,8 @@ class pychess_board():
             return False
         
         
-        # ensure that startRow <= endRow (problem is symmetric, so self is valid)
-        
-        if(rowDiff < 0):
+        # ensure that rowDiff >= 0 or colDiff >= 0 (problem is symmetric, so this is valid)
+        if(rowDiff < 0 or (rowDiff == 0  and colDiff < 0)):
             return self.__is_empty_between(endRow, endCol, startRow, startCol)
         
         
@@ -612,15 +699,15 @@ class pychess_board():
                     return False
                 
             
-        elif(rowDiff ==0):
+        elif(rowDiff == 0):
             for col in range(startCol+1, endCol):
                 if(not self.__is_empty_square(startRow, col)):
                     return False
                 
             
         elif(colDiff == 0):
-            for row in range(startRow+1, endRow):
-                if(not self.__is_empty_square(row, startCol)):
+            for i in range(1, rowDiff):
+                if(not self.__is_empty_square(startRow + i, startCol)):
                     return False
                 
         return True
@@ -652,7 +739,7 @@ class pychess_board():
         tempTurn = False
         if(rowDiff == colDiff):
             for i in range(1, rowDiff):
-                a_copy = a_copy.__move_piece_no_check(startRow + i - 1, startCol + i - 1, startRow + i, startCol + i)
+                a_copy = a_copy.__move_piece_no_check(move_object(startRow + i - 1, startCol + i - 1, startRow + i, startCol + i))
                 
                 if(kingInDanger(a_copy, tempTurn)):
                     return False
@@ -661,7 +748,7 @@ class pychess_board():
             
         elif(rowDiff == 0):
             for col in range(startCol+1, endCol):
-                a_copy = a_copy.__move_piece_no_check(startRow, col - 1, startRow, col)
+                a_copy = a_copy.__move_piece_no_check(move_object(startRow, col - 1, startRow, col))
                 if(a_copy.__king_in_danger(tempTurn)):
                     return False
                 
@@ -669,7 +756,7 @@ class pychess_board():
             
         elif(colDiff == 0):
             for row in range(startRow+1, endRow):
-                a_copy = a_copy.__move_piece_no_check(row - 1, startCol, row, startCol)
+                a_copy = a_copy.__move_piece_no_check(move_object(row - 1, startCol, row, startCol))
                 if(a_copy.__king_in_danger(tempTurn)):
                     return False
                 
@@ -682,7 +769,7 @@ class pychess_board():
     def __king_in_danger(self, currentTurn = True):
         # if currentTurn is True, returns if the king is in danger for player whose turn it is
         # if currentTurn is False, returns if the king is in danger for player whose turn it is not
-        sign = 0
+
         kingRow = -1
         kingCol = -1
         
@@ -704,9 +791,19 @@ class pychess_board():
         
         if(kingRow == -1 or kingCol == -1):
             # self should be an exception?
-            return False
+            raise Exception("king not found")
         
         
+        
+        # check enemy pawns
+        if(not self.__out_of_bounds(kingRow - sign, kingCol + 1)):
+            if(self.board[kingRow - sign][kingCol + 1] == sign * -1):
+                return True
+            
+        if(not self.__out_of_bounds(kingRow - sign, kingCol - 1)):
+            if(self.board[kingRow - sign][kingCol - 1] == sign * -1):
+                return True
+            
         
         
         # check enemy knights
@@ -902,13 +999,7 @@ class pychess_board():
         self.enPassantable = temp
         self.resetEnPassant = False
     
-    def __new_move(self, start_row, start_col, row, col):
-        output = []
-        output.append(start_row)
-        output.append(start_col)
-        output.append(row)
-        output.append(col)
-        return output
-   
     def __promote(self, row, col, piece):
+        assert(piece == 2 or piece == 3 or piece == 4 or piece == 5)
+        
         self.board[row][col] = piece
