@@ -1,9 +1,13 @@
 from pychess_board import pychess_board
 import math
+<<<<<<< HEAD
 import numpy
 from gametree_node import gametree_node
 import datetime
 from move_object import move_object
+=======
+from gametree import gametree
+>>>>>>> branch 'master' of https://github.com/akarshkumar0101/KAChess
 
 class pychess_engine:
     """ This class provides an interface to play, uses the gametree module to pick best move """
@@ -51,10 +55,8 @@ class pychess_engine:
     """                PUBLIC METHODS                 """
     """                                               """
     """                                               """
-    
     def play(self, player_move):
         """ accepts a move, makes the best move on the board, returns the move if completed (else None) """
-        
         if(not self.__make_player_move(player_move)):
             print("not a legal move.")
             return None
@@ -62,7 +64,6 @@ class pychess_engine:
             print(self.to_string()) # development
             best_move = self.__make_engine_move() # depends on self.depth
             print(self.to_string()) # development
-            
             return best_move
     
    
@@ -94,7 +95,6 @@ class pychess_engine:
         
     def resign(self):
         self.chessboard.resign(self.__player_to_move())
-     
        
     def change_depth(self, depth):
         self.depth = depth

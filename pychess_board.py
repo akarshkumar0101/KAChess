@@ -79,7 +79,6 @@ class pychess_board():
         self.draw_is_offered = [False, False] # draw offered by [white, black]
         
         
-        
     """                                               """
     """                                               """
     """                PUBLIC METHODS                 """
@@ -192,7 +191,8 @@ class pychess_board():
             elif(self.white_to_move() and draw_is_offered[0]):
                 self.__end_game("It's a draw.")
         
-       
+
+    
     """                                               """
     """                                               """
     """                PRIVATE METHODS                """
@@ -316,13 +316,10 @@ class pychess_board():
         for i in range(8):
             if(self.__check_move(move_object(row, col, row + i, col + i))):
                 output.append(move_object(row, col, row + i, col + i))
-            
             if(self.__check_move(move_object(row, col, row - i, col + i))):
                 output.append(move_object(row, col, row - i, col + i))
-            
             if(self.__check_move(move_object(row, col, row + i, col - i))):
                 output.append(move_object(row, col, row + i, col - i))
-            
             if(self.__check_move(move_object(row, col, row - i, col - i))):
                 output.append(move_object(row, col, row - i, col - i))
         
@@ -333,6 +330,7 @@ class pychess_board():
         
         for row in range(-1, 2):
             for col in range(-1, 2):
+
                 a_move = move_object(kingRow, kingCol, kingRow + row, kingCol + col)
                 if(self.__check_move(a_move)):
                     output.append(a_move)
@@ -384,13 +382,10 @@ class pychess_board():
                             output.append(move_object(row, col, row - 1, col - 1, i))                        
                 
                 else:
-                
                     if(self.__check_move(move_object(row, col, row -1, col))):
                             output.append(move_object(row, col, row - 1, col))
-                    
                     if(self.__check_move(move_object(row, col, row -1, col + 1))):
                         output.append(move_object(row, col, row - 1, col + 1))
-                    
                     if(self.__check_move(move_object(row, col, row -1, col - 1))):
                         output.append(move_object(row, col, row - 1, col - 1))
                     
