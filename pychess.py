@@ -1,6 +1,8 @@
 from pychess_engine import pychess_engine
 import datetime
 from move_object import move_object
+import pychess_board_gui
+
 #from pychess_robot import pychess_robot
 
 
@@ -32,7 +34,7 @@ def main():
     print("time to setup engine " + str(datetime.datetime.now() - start))
     
     while True:
-        
+        #pychess_board_gui.showBoard(engine.chessboard.get_board());
         a_move = input("enter move: ").split(",")
         
         try:

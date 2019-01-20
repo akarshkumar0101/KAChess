@@ -292,8 +292,18 @@ class pychess_vision:
 def main():
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001);
 
-    #startVideoFeed();
-    colorTestFeed();
+    startVideoFeed();
+    #colorTestFeed();
+    board = np.zeros((8,8));
+    for x in range(0, 8):
+        for y in range(0, 8):
+            board[x,y] = x*10+y;
+
+    newboard = rotateBoardClockwise(board);
+    print(board);
+    print(newboard);
+
+
 
     return;
     vision = pychess_vision();
@@ -391,6 +401,32 @@ def startVideoFeed():
 
     cv2.destroyAllWindows();
 
+
+def rotateBoardClockwise(board):
+    newboard = board * 1;
+
+    for x in range(0,8):
+        if x < 4:
+            nx = x - 4;
+        else:
+            nx = x - 3;
+        for y in range(0,8):
+            if y < 4:
+                ny = y - 4;
+            else:
+                ny = y - 3;
+            pnx = -ny;
+            pny = nx;
+            if pnx<0:
+                px = pnx+4;
+            else:
+                px = pnx+3;
+            if pny<0:
+                py = pny+4;
+            else:
+                py = pny+3;
+            newboard[x,y] = board[px,py];
+    return newboard;
 
 if __name__ == "__main__":
     main();
